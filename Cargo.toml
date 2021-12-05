@@ -1,10 +1,22 @@
 [package]
 name = "creature_feature"
 version = "0.1.0"
-authors = ["logan"]
+authors = ["Logan Dimond"]
 edition = "2018"
 
+#keywords = ["featurize", "featurization", "nlp", "ngram", "ngrams"]
+
+#categories = ["algorithms", "no-std"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+serde1 = ["serde"]
+
+[package.metadata.playground]
+features = ["serde1"]
+
+
+
 [dependencies]
-fxhash = "0.2.1"
+fxhash = {version = "0.2.1"}
+serde = { version = "1.0.103", features = ["derive"], optional = true }
