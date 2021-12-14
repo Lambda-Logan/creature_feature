@@ -11,6 +11,9 @@ name = "creature_feature"
 version = "0.1.0"
 dependencies = [
  "fxhash",
+ "ngram",
+ "ngrammatic",
+ "ngrams",
  "serde",
 ]
 
@@ -22,6 +25,24 @@ checksum = "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c"
 dependencies = [
  "byteorder",
 ]
+
+[[package]]
+name = "ngram"
+version = "0.1.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcce6b35485087e90052b1c80e704b55332221e3474697a3ec22d2b963302775"
+
+[[package]]
+name = "ngrammatic"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf3abe33347f4b9af82147f8d241f5451165a4b467e64fd2d30de1639007567b"
+
+[[package]]
+name = "ngrams"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ad9273e27d7914b3d11aeac20a91c0da7ef1e89edc4e3825021ebb8ac3b83bf2"
 
 [[package]]
 name = "proc-macro2"

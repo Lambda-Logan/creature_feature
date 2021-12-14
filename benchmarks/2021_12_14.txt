@@ -1,0 +1,417 @@
+n = 2 @ creature_feature::slice_gram + Vec<&str> (from &str)
+    Result: 4699
+    Microseconds to featurize 10k grams: 128μs
+
+
+
+n = 2 @ creature_feature::n_gram + Vec<String> (from &str)
+    Result: 4699
+    Microseconds to featurize 10k grams: 721μs
+
+
+
+n = 2 @ OTHER CRATE C + HashMap<String, usize> (from Iterator of <u8>)
+    Result: 4701
+    Microseconds to featurize 10k grams: 630μs
+
+
+
+n = 2 @ creature_feature::slice_gram + Vec<Feature64> (from &str)
+    Result: 4699
+    Microseconds to featurize 10k grams: 70μs
+
+
+
+n = 2 @ creature_feature::n_gram + Vec<Feature64> (from &str)
+    Result: 4699
+    Microseconds to featurize 10k grams: 82μs
+
+
+
+n = 2 @ creature_feature::slice_gram + Vec<&[u8]> (from &str)
+    Result: 4699
+    Microseconds to featurize 10k grams: 25μs
+
+
+
+n = 2 @ creature_feature::n_gram + Vec<[u8;N]> (from &str)
+    Result: 4699
+    Microseconds to featurize 10k grams: 16μs
+
+
+
+n = 2 @ OTHER CRATE B + Vec<Vec<u8>> (from Iterator of <u8>)
+    Result: 4699
+    Microseconds to featurize 10k grams: 757μs
+
+
+
+n = 2 @ OTHER CRATE A + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4699
+    Microseconds to featurize 10k grams: 758μs
+
+
+
+n = 2 @ OTHER CRATE B + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4699
+    Microseconds to featurize 10k grams: 614μs
+
+
+
+n = 2 @ creature_feature::n_gram + Vec<[char;N]> (from Vec<char>)
+    Result: 4699
+    Microseconds to featurize 10k grams: 18μs
+
+
+
+n = 2 @ creature_feature::slice_gram + Vec<&[char]> (from Vec<char>)
+    Result: 4699
+    Microseconds to featurize 10k grams: 25μs
+
+
+
+n = 2 @ creature_feature::n_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4699
+    Microseconds to featurize 10k grams: 28μs
+
+
+
+n = 2 @ creature_feature::slice_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4699
+    Microseconds to featurize 10k grams: 41μs
+
+
+
+n = 4 @ creature_feature::slice_gram + Vec<&str> (from &str)
+    Result: 4697
+    Microseconds to featurize 10k grams: 137μs
+
+
+
+n = 4 @ creature_feature::n_gram + Vec<String> (from &str)
+    Result: 4697
+    Microseconds to featurize 10k grams: 740μs
+
+
+
+n = 4 @ OTHER CRATE C + HashMap<String, usize> (from Iterator of <u8>)
+    Result: 4703
+    Microseconds to featurize 10k grams: 671μs
+
+
+
+n = 4 @ creature_feature::slice_gram + Vec<Feature64> (from &str)
+    Result: 4697
+    Microseconds to featurize 10k grams: 53μs
+
+
+
+n = 4 @ creature_feature::n_gram + Vec<Feature64> (from &str)
+    Result: 4697
+    Microseconds to featurize 10k grams: 66μs
+
+
+
+n = 4 @ creature_feature::slice_gram + Vec<&[u8]> (from &str)
+    Result: 4697
+    Microseconds to featurize 10k grams: 29μs
+
+
+
+n = 4 @ creature_feature::n_gram + Vec<[u8;N]> (from &str)
+    Result: 4697
+    Microseconds to featurize 10k grams: 15μs
+
+
+
+n = 4 @ OTHER CRATE B + Vec<Vec<u8>> (from Iterator of <u8>)
+    Result: 4697
+    Microseconds to featurize 10k grams: 761μs
+
+
+
+n = 4 @ OTHER CRATE A + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4697
+    Microseconds to featurize 10k grams: 805μs
+
+
+
+n = 4 @ OTHER CRATE B + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4697
+    Microseconds to featurize 10k grams: 866μs
+
+
+
+n = 4 @ creature_feature::n_gram + Vec<[char;N]> (from Vec<char>)
+    Result: 4697
+    Microseconds to featurize 10k grams: 28μs
+
+
+
+n = 4 @ creature_feature::slice_gram + Vec<&[char]> (from Vec<char>)
+    Result: 4697
+    Microseconds to featurize 10k grams: 27μs
+
+
+
+n = 4 @ creature_feature::n_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4697
+    Microseconds to featurize 10k grams: 47μs
+
+
+
+n = 4 @ creature_feature::slice_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4697
+    Microseconds to featurize 10k grams: 49μs
+
+
+
+n = 8 @ creature_feature::slice_gram + Vec<&str> (from &str)
+    Result: 4693
+    Microseconds to featurize 10k grams: 159μs
+
+
+
+n = 8 @ creature_feature::n_gram + Vec<String> (from &str)
+    Result: 4693
+    Microseconds to featurize 10k grams: 731μs
+
+
+
+n = 8 @ OTHER CRATE C + HashMap<String, usize> (from Iterator of <u8>)
+    Result: 4707
+    Microseconds to featurize 10k grams: 771μs
+
+
+
+n = 8 @ creature_feature::slice_gram + Vec<Feature64> (from &str)
+    Result: 4693
+    Microseconds to featurize 10k grams: 62μs
+
+
+
+n = 8 @ creature_feature::n_gram + Vec<Feature64> (from &str)
+    Result: 4693
+    Microseconds to featurize 10k grams: 72μs
+
+
+
+n = 8 @ creature_feature::slice_gram + Vec<&[u8]> (from &str)
+    Result: 4693
+    Microseconds to featurize 10k grams: 28μs
+
+
+
+n = 8 @ creature_feature::n_gram + Vec<[u8;N]> (from &str)
+    Result: 4693
+    Microseconds to featurize 10k grams: 18μs
+
+
+
+n = 8 @ OTHER CRATE B + Vec<Vec<u8>> (from Iterator of <u8>)
+    Result: 4693
+    Microseconds to featurize 10k grams: 795μs
+
+
+
+n = 8 @ OTHER CRATE A + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4693
+    Microseconds to featurize 10k grams: 930μs
+
+
+
+n = 8 @ OTHER CRATE B + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4693
+    Microseconds to featurize 10k grams: 979μs
+
+
+
+n = 8 @ creature_feature::n_gram + Vec<[char;N]> (from Vec<char>)
+    Result: 4693
+    Microseconds to featurize 10k grams: 250μs
+
+
+
+n = 8 @ creature_feature::slice_gram + Vec<&[char]> (from Vec<char>)
+    Result: 4693
+    Microseconds to featurize 10k grams: 26μs
+
+
+
+n = 8 @ creature_feature::n_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4693
+    Microseconds to featurize 10k grams: 81μs
+
+
+
+n = 8 @ creature_feature::slice_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4693
+    Microseconds to featurize 10k grams: 85μs
+
+
+
+n = 32 @ creature_feature::slice_gram + Vec<&str> (from &str)
+    Result: 4669
+    Microseconds to featurize 10k grams: 203μs
+
+
+
+n = 32 @ creature_feature::n_gram + Vec<String> (from &str)
+    Result: 4669
+    Microseconds to featurize 10k grams: 579μs
+
+
+
+n = 32 @ OTHER CRATE C + HashMap<String, usize> (from Iterator of <u8>)
+    Result: 4731
+    Microseconds to featurize 10k grams: 1365μs
+
+
+
+n = 32 @ creature_feature::slice_gram + Vec<Feature64> (from &str)
+    Result: 4669
+    Microseconds to featurize 10k grams: 65μs
+
+
+
+n = 32 @ creature_feature::n_gram + Vec<Feature64> (from &str)
+    Result: 4669
+    Microseconds to featurize 10k grams: 74μs
+
+
+
+n = 32 @ creature_feature::slice_gram + Vec<&[u8]> (from &str)
+    Result: 4669
+    Microseconds to featurize 10k grams: 26μs
+
+
+
+n = 32 @ creature_feature::n_gram + Vec<[u8;N]> (from &str)
+    Result: 4669
+    Microseconds to featurize 10k grams: 48μs
+
+
+
+n = 32 @ OTHER CRATE B + Vec<Vec<u8>> (from Iterator of <u8>)
+    Result: 4669
+    Microseconds to featurize 10k grams: 1107μs
+
+
+
+n = 32 @ OTHER CRATE A + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4669
+    Microseconds to featurize 10k grams: 1763μs
+
+
+
+n = 32 @ OTHER CRATE B + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4669
+    Microseconds to featurize 10k grams: 1449μs
+
+
+
+n = 32 @ creature_feature::n_gram + Vec<[char;N]> (from Vec<char>)
+    Result: 4669
+    Microseconds to featurize 10k grams: 319μs
+
+
+
+n = 32 @ creature_feature::slice_gram + Vec<&[char]> (from Vec<char>)
+    Result: 4669
+    Microseconds to featurize 10k grams: 38μs
+
+
+
+n = 32 @ creature_feature::n_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4669
+    Microseconds to featurize 10k grams: 565μs
+
+
+
+n = 32 @ creature_feature::slice_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4669
+    Microseconds to featurize 10k grams: 440μs
+
+
+
+n = 128 @ creature_feature::slice_gram + Vec<&str> (from &str)
+    Result: 4573
+    Microseconds to featurize 10k grams: 252μs
+
+
+
+n = 128 @ creature_feature::n_gram + Vec<String> (from &str)
+    Result: 4573
+    Microseconds to featurize 10k grams: 674μs
+
+
+
+n = 128 @ OTHER CRATE C + HashMap<String, usize> (from Iterator of <u8>)
+    Result: 4827
+    Microseconds to featurize 10k grams: 3962μs
+
+
+
+n = 128 @ creature_feature::slice_gram + Vec<Feature64> (from &str)
+    Result: 4573
+    Microseconds to featurize 10k grams: 209μs
+
+
+
+n = 128 @ creature_feature::n_gram + Vec<Feature64> (from &str)
+    Result: 4573
+    Microseconds to featurize 10k grams: 234μs
+
+
+
+n = 128 @ creature_feature::slice_gram + Vec<&[u8]> (from &str)
+    Result: 4573
+    Microseconds to featurize 10k grams: 41μs
+
+
+
+n = 128 @ creature_feature::n_gram + Vec<[u8;N]> (from &str)
+    Result: 4573
+    Microseconds to featurize 10k grams: 160μs
+
+
+
+n = 128 @ OTHER CRATE B + Vec<Vec<u8>> (from Iterator of <u8>)
+    Result: 4573
+    Microseconds to featurize 10k grams: 1890μs
+
+
+
+n = 128 @ OTHER CRATE A + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4573
+    Microseconds to featurize 10k grams: 5193μs
+
+
+
+n = 128 @ OTHER CRATE B + Vec<Vec<char>> (from Iterator of <char>)
+    Result: 4573
+    Microseconds to featurize 10k grams: 3928μs
+
+
+
+n = 128 @ creature_feature::n_gram + Vec<[char;N]> (from Vec<char>)
+    Result: 4573
+    Microseconds to featurize 10k grams: 1300μs
+
+
+
+n = 128 @ creature_feature::slice_gram + Vec<&[char]> (from Vec<char>)
+    Result: 4573
+    Microseconds to featurize 10k grams: 39μs
+
+
+
+n = 128 @ creature_feature::n_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4573
+    Microseconds to featurize 10k grams: 2696μs
+
+
+
+n = 128 @ creature_feature::slice_gram + Vec<Feature64> (from Vec<char>)
+    Result: 4573
+    Microseconds to featurize 10k grams: 2068μs
