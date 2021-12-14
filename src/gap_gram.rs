@@ -1,5 +1,5 @@
 use crate::accum_ftzr::Ftzr;
-use crate::from_token::FromToken;
+use crate::token_from::TokenFrom;
 use std::marker::PhantomData;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
@@ -80,9 +80,9 @@ impl<A1, A2: From<A1>, B1, B2: From<B1>> From<GapPair<A1, B1>> for (A2, B2) {
     }
 }
 
-impl<A1, A2: FromToken<A1>, B1, B2: FromToken<B1>> FromToken<GapPair<A1, B1>> for (A2, B2) {
+impl<A1, A2: TokenFrom<A1>, B1, B2: TokenFrom<B1>> TokenFrom<GapPair<A1, B1>> for (A2, B2) {
     fn from(sp: GapPair<A1, B1>) -> Self {
-        (FromToken::from(sp.0), FromToken::from(sp.1))
+        (TokenFrom::from(sp.0), TokenFrom::from(sp.1))
     }
 }
 

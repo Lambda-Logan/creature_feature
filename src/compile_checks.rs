@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedL
 
 use crate::tokengroup::*;
 
-use crate::from_token::FromToken;
+use crate::token_from::TokenFrom;
 
 use crate::multiftzr::*;
 
@@ -20,7 +20,7 @@ use crate::bookends::*;
 
 fn featurize<Out, Origin, F: Ftzr<Origin>>(f: F, o: Origin) -> Vec<Out>
 where
-    Out: FromToken<F::TokenGroup>,
+    Out: TokenFrom<F::TokenGroup>,
 {
     f.featurize(o)
 }

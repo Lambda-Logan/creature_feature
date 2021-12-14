@@ -1,8 +1,7 @@
 //mod accumulators;
 //use accumulators::*;
 
-mod from_token;
-mod multiftzr;
+mod token_from;
 
 mod bench;
 
@@ -17,6 +16,9 @@ use accum_ftzr::*;
 
 mod slice_gram;
 use slice_gram::*;
+
+mod multiftzr;
+use multiftzr::*;
 
 mod gap_gram;
 use gap_gram::*;

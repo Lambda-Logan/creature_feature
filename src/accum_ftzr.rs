@@ -1,4 +1,4 @@
-use crate::from_token::FromToken;
+use crate::token_from::TokenFrom;
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use std::hash::{BuildHasher, Hash};
 use std::ops::AddAssign;
@@ -13,14 +13,14 @@ pub trait Ftzr<Origin> //Self: Sized,
     fn chunk_size(&self) -> usize;
     /////////////////////////////
     /////////////////////////////
-    fn featurize<Feature: FromToken<Self::TokenGroup>, A: Accumulates<Feature>>(
+    fn featurize<Feature: TokenFrom<Self::TokenGroup>, A: Accumulates<Feature>>(
         &self,
         origin: Origin,
     ) -> A {
         Accumulates::accum(self.extract_tokens(origin))
     }
 
-    fn as_fn<X: FromToken<Self::TokenGroup>>(self) -> Arc<dyn Fn(Origin) -> Vec<X> + Send + Sync>
+    fn as_fn<X: TokenFrom<Self::TokenGroup>>(self) -> Arc<dyn Fn(Origin) -> Vec<X> + Send + Sync>
     where
         Self: Sized + Send + Sync + 'static,
     {
@@ -35,7 +35,7 @@ pub trait Ftzr<Origin> //Self: Sized,
 pub trait Accumulates<Feature> {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: FromToken<Token>,
+        Feature: TokenFrom<Token>,
         Iter: Iterator<Item = Token>;
 }
 
@@ -55,10 +55,10 @@ macro_rules! impl_accum_fromiter {
         impl<Feature> Accumulates<Feature> for $t {
             fn accum<Token, Iter>(iter: Iter) -> Self
             where
-                Feature: FromToken<Token>,
+                Feature: TokenFrom<Token>,
                 Iter: Iterator<Item = Token>,
             {
-                Iterator::collect(iter.into_iter().map(FromToken::from))
+                Iterator::collect(iter.into_iter().map(TokenFrom::from))
             }
         }
     };
@@ -82,12 +82,12 @@ where
 {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: FromToken<Token>,
+        Feature: TokenFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
         let mut bag: Self = Default::default();
         for t in iter {
-            let f: Feature = FromToken::from(t);
+            let f: Feature = TokenFrom::from(t);
             *bag.entry(f).or_default() += From::from(1);
         }
         bag
@@ -101,10 +101,10 @@ where
 {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: FromToken<Token>,
+        Feature: TokenFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
-        Iterator::collect(iter.into_iter().map(FromToken::from))
+        Iterator::collect(iter.into_iter().map(TokenFrom::from))
     }
 }
 
@@ -112,20 +112,20 @@ where
 impl<Feature: Ord> Accumulates<Feature> for BTreeSet<Feature> {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: FromToken<Token>,
+        Feature: TokenFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
-        Iterator::collect(iter.into_iter().map(FromToken::from))
+        Iterator::collect(iter.into_iter().map(TokenFrom::from))
     }
 }
 
 impl<Feature: Ord> Accumulates<Feature> for BinaryHeap<Feature> {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: FromToken<Token>,
+        Feature: TokenFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
-        Iterator::collect(iter.into_iter().map(FromToken::from))
+        Iterator::collect(iter.into_iter().map(TokenFrom::from))
     }
 }
 
@@ -136,12 +136,12 @@ where
 {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: FromToken<Token>,
+        Feature: TokenFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
         let mut bag: Self = Default::default();
         for t in iter {
-            let f: Feature = FromToken::from(t);
+            let f: Feature = TokenFrom::from(t);
             *bag.entry(f).or_default() += From::from(1);
         }
         bag

@@ -1,6 +1,5 @@
 use crate::accum_ftzr::Ftzr;
 use std::convert::{TryFrom, TryInto};
-
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug, Default)]
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
 pub struct NGram<const N: usize>();

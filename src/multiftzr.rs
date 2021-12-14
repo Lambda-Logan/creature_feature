@@ -1,5 +1,5 @@
 use crate::accum_ftzr::Ftzr;
-use crate::from_token::FromToken;
+use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 use std::hash::{Hash, Hasher};
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
@@ -104,15 +104,15 @@ where
     }
 }
 
-impl<A, B, X> FromToken<EitherGroup<A, B>> for Token<X>
+impl<A, B, X> TokenFrom<EitherGroup<A, B>> for Token<X>
 where
-    X: FromToken<A> + FromToken<B>,
+    X: TokenFrom<A> + TokenFrom<B>,
 {
     fn from(x: EitherGroup<A, B>) -> Self {
         Token({
             match x {
-                EitherGroup::Left(a) => FromToken::from(a),
-                EitherGroup::Right(a) => FromToken::from(a),
+                EitherGroup::Left(a) => TokenFrom::from(a),
+                EitherGroup::Right(a) => TokenFrom::from(a),
             }
         })
     }

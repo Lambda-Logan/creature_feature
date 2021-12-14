@@ -1,5 +1,5 @@
 use crate::accum_ftzr::Ftzr;
-use crate::from_token::FromToken;
+use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
@@ -76,27 +76,27 @@ pub enum FrontBack<A, B> {
     Back(B),
 }
 
-impl<A, B, C> FromToken<FrontBack<A, B>> for Token<C>
+impl<A, B, C> TokenFrom<FrontBack<A, B>> for Token<C>
 where
-    C: FromToken<A> + FromToken<B>,
+    C: TokenFrom<A> + TokenFrom<B>,
 {
     fn from(x: FrontBack<A, B>) -> Self {
         Token(match x {
-            FrontBack::Front(a) => FromToken::from(a),
-            FrontBack::Back(a) => FromToken::from(a),
+            FrontBack::Front(a) => TokenFrom::from(a),
+            FrontBack::Back(a) => TokenFrom::from(a),
         })
     }
 }
 
-impl<A, B, Ax, Bx> FromToken<FrontBack<A, B>> for Result<Ax, Bx>
+impl<A, B, Ax, Bx> TokenFrom<FrontBack<A, B>> for Result<Ax, Bx>
 where
-    Ax: FromToken<A>,
-    Bx: FromToken<B>,
+    Ax: TokenFrom<A>,
+    Bx: TokenFrom<B>,
 {
     fn from(x: FrontBack<A, B>) -> Self {
         match x {
-            FrontBack::Front(a) => Ok(FromToken::from(a)),
-            FrontBack::Back(a) => Err(FromToken::from(a)),
+            FrontBack::Front(a) => Ok(TokenFrom::from(a)),
+            FrontBack::Back(a) => Err(TokenFrom::from(a)),
         }
     }
 }

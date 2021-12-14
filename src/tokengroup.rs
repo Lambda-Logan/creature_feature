@@ -75,7 +75,7 @@ macro_rules! group_from_iter {
             for $iter
         {
             fn from(token_group: Token<[Feature1; N]>) -> Self {
-                Self::from_iter(token_group.0.into_iter().map(|x| From::from(*x)))
+                Self::from_iter(token_group.0.iter().map(|x| From::from(*x)))
             }
         }
     };

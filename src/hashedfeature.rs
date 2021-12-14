@@ -1,5 +1,5 @@
-use crate::from_token::FromToken;
 use crate::gap_gram::GapPair;
+use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 use fxhash::FxHasher64;
 use std::hash::{Hash, Hasher};
@@ -30,7 +30,7 @@ impl<T: Hash> From<Token<T>> for Feature64 {
     }
 }
 
-impl<T: Hash> FromToken<T> for Feature64 {
+impl<T: Hash> TokenFrom<T> for Feature64 {
     fn from(token_group: T) -> Self {
         let mut h = FxHasher64::default();
         token_group.hash(&mut h);
