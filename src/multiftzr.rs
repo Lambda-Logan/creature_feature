@@ -6,7 +6,7 @@ use std::hash::{Hash, Hasher};
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
 pub struct MultiFtzr<A, B>(pub A, pub B);
 
-impl<'a, Origin: 'a, TA, TB, A, B> Ftzr<&'a Origin> for MultiFtzr<A, B>
+impl<'a, Origin: 'a, TA: Hash, TB: Hash, A, B> Ftzr<&'a Origin> for MultiFtzr<A, B>
 where
     Origin: ?Sized,
     A: Ftzr<&'a Origin, TokenGroup = TA>,

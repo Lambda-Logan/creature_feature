@@ -1,7 +1,7 @@
 use crate::accum_ftzr::Ftzr;
 use crate::token_from::TokenFrom;
+use std::hash::Hash;
 use std::marker::PhantomData;
-
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
 pub struct GapGramIter<'a, A, B, T, U1, U2> {
@@ -86,7 +86,7 @@ impl<A1, A2: TokenFrom<A1>, B1, B2: TokenFrom<B1>> TokenFrom<GapPair<A1, B1>> fo
     }
 }
 
-impl<'a, T: 'a, A, B, U1: 'a, U2: 'a> Ftzr<&'a [T]> for GapGram<A, B>
+impl<'a, T: 'a, A, B, U1: 'a + Hash, U2: 'a + Hash> Ftzr<&'a [T]> for GapGram<A, B>
 where
     A: Ftzr<&'a [T], TokenGroup = U1>,
     B: Ftzr<&'a [T], TokenGroup = U2>,
@@ -104,7 +104,7 @@ where
     }
 }
 
-impl<'a, A, B, U1: 'a, U2: 'a> Ftzr<&'a str> for GapGram<A, B>
+impl<'a, A, B, U1: 'a + Hash, U2: 'a + Hash> Ftzr<&'a str> for GapGram<A, B>
 where
     A: Ftzr<&'a [u8], TokenGroup = U1>,
     B: Ftzr<&'a [u8], TokenGroup = U2>,
@@ -121,7 +121,7 @@ where
     }
 }
 
-impl<'a, A, B, U1: 'a, U2: 'a> Ftzr<&'a String> for GapGram<A, B>
+impl<'a, A, B, U1: 'a + Hash, U2: 'a + Hash> Ftzr<&'a String> for GapGram<A, B>
 where
     A: Ftzr<&'a [u8], TokenGroup = U1>,
     B: Ftzr<&'a [u8], TokenGroup = U2>,

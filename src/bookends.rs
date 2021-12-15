@@ -1,6 +1,7 @@
 use crate::accum_ftzr::Ftzr;
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
+use std::hash::Hash;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
@@ -20,7 +21,7 @@ pub fn bookends<A, B>(front: (usize, A), back: (B, usize)) -> BookEnds<A, B> {
     }
 }
 
-impl<'a, T: 'a, TA: 'a, TB: 'a, A, B> Ftzr<&'a [T]> for BookEnds<A, B>
+impl<'a, T: 'a, TA: 'a + Hash, TB: 'a + Hash, A, B> Ftzr<&'a [T]> for BookEnds<A, B>
 where
     A: Ftzr<&'a [T], TokenGroup = TA>,
     B: Ftzr<&'a [T], TokenGroup = TB>,

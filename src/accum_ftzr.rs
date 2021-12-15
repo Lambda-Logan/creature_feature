@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 pub trait Ftzr<Origin> //Self: Sized,
 {
-    type TokenGroup;
+    type TokenGroup: Hash;
     type Iter: Iterator<Item = Self::TokenGroup>;
     fn extract_tokens(&self, origin: Origin) -> Self::Iter;
     fn chunk_size(&self) -> usize;

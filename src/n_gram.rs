@@ -1,5 +1,6 @@
 use crate::accum_ftzr::Ftzr;
 use std::convert::{TryFrom, TryInto};
+use std::hash::Hash;
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug, Default)]
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
 pub struct NGram<const N: usize>();
@@ -33,7 +34,7 @@ where
     }
 }
 
-impl<'a, T, const N: usize> Ftzr<&'a [T]> for NGram<N>
+impl<'a, T: Hash, const N: usize> Ftzr<&'a [T]> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
 {
@@ -50,7 +51,7 @@ where
     }
 }
 
-impl<'a, T, const N: usize> Ftzr<&'a Vec<T>> for NGram<N>
+impl<'a, T: Hash, const N: usize> Ftzr<&'a Vec<T>> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
 {
@@ -84,7 +85,7 @@ where
     }
 }
 
-impl<'a, T, const N: usize> Ftzr<&'a [T; N]> for NGram<N>
+impl<'a, T: Hash, const N: usize> Ftzr<&'a [T; N]> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
 {

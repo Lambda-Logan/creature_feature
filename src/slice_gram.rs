@@ -1,4 +1,5 @@
 use crate::accum_ftzr::Ftzr;
+use std::hash::Hash;
 //use crate::tokengroup::TokenGroup;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
@@ -72,7 +73,7 @@ macro_rules! impl_slice_gram {
     };
 } */
 
-impl<'a, T> Ftzr<&'a [T]> for SliceGram {
+impl<'a, T: Hash> Ftzr<&'a [T]> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
     fn chunk_size(&self) -> usize {
@@ -87,7 +88,7 @@ impl<'a, T> Ftzr<&'a [T]> for SliceGram {
     }
 }
 
-impl<'a, T> Ftzr<&'a Vec<T>> for SliceGram {
+impl<'a, T: Hash> Ftzr<&'a Vec<T>> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
     fn chunk_size(&self) -> usize {
@@ -117,7 +118,7 @@ impl<'a> Ftzr<&'a str> for SliceGram {
     }
 }
 
-impl<'a, T, const N: usize> Ftzr<&'a [T; N]> for SliceGram {
+impl<'a, T: Hash, const N: usize> Ftzr<&'a [T; N]> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
     fn chunk_size(&self) -> usize {
