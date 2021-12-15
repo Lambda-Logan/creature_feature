@@ -4,6 +4,8 @@ use crate::tokengroup::*;
 
 use crate::token_from::TokenFrom;
 
+use crate::for_each::*;
+
 use crate::multiftzr::*;
 
 use crate::accum_ftzr::*;
@@ -63,7 +65,7 @@ pub(crate) fn run_checks() {
     let g_bigram = gap_gram(n_gram::<1>(), 0, n_gram::<1>());
     let g_g_bigram = gap_gram(g_bigram, 2, g_bigram);
     let g_s_bigram = gap_gram(bislice, 2, bislice);
-
+    let sentence = "one fish two fish red rish blue fish";
     let ak_bigrams = &["ab", "bc", "cd", "de", "ef", "fg", "gh", "hi", "ij", "jk"];
     let ak_bigrams_feat64 = &[
         Feature64(7222436297203265833),
@@ -200,7 +202,20 @@ pub(crate) fn run_checks() {
     //let feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(n_usize_12);
     let feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(&n_usize_12[..]);
     use std::collections::LinkedList;
-    let feats: LinkedList<(&str, String)> = gap_gram(bislice, 4, n_gram::<3>()).featurize(ak);
+    //TODO Linked list & friends
+    //let feats: LinkedList<(&str, String)> = gap_gram(bislice, 4, n_gram::<3>()).featurize(ak);
     let feats: HashMap<&str, u8> = bislice.featurize(ak);
+
+    let feats: Vec<&str> = for_each(bislice).featurize(sentence.split_ascii_whitespace());
+
+    let doc = r#"
+    i went to the market
+    to buy a fat pig
+    home again home again
+    jig itty jig
+"#;
+    let doc_iter = doc.lines().map(|line| line.split_ascii_whitespace());
+    let feats: Vec<&str> = for_each(for_each(bislice)).featurize(doc_iter);
+
     println!("{:?}", feats);
 }

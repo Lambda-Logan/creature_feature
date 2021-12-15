@@ -5,19 +5,32 @@ use std::ops::AddAssign;
 use std::rc::Rc;
 use std::sync::Arc;
 
-pub trait Ftzr<Origin> //Self: Sized,
-{
-    type TokenGroup: Hash;
+pub trait IterFtzr<Origin> {
+    type TokenGroup;
     type Iter: Iterator<Item = Self::TokenGroup>;
     fn extract_tokens(&self, origin: Origin) -> Self::Iter;
     fn chunk_size(&self) -> usize;
-    /////////////////////////////
-    /////////////////////////////
+}
+
+pub trait Ftzr<Origin> {
+    type TokenGroup;
+
+    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> ();
+
+    ////////////////////////////////////////////////////////////////////////////
     fn featurize<Feature: TokenFrom<Self::TokenGroup>, A: Accumulates<Feature>>(
         &self,
         origin: Origin,
     ) -> A {
-        Accumulates::accum(self.extract_tokens(origin))
+        let mut state: A::State = Default::default();
+        {
+            let mut push = |t: Self::TokenGroup| A::accum_token(&mut state, TokenFrom::from(t));
+            self.push_tokens(origin, &mut push);
+        }
+        //Self::TokenGroup: TokenFrom<Self::TokenGroup>
+        A::finish(state)
     }
 
     fn as_fn<X: TokenFrom<Self::TokenGroup>>(self) -> Arc<dyn Fn(Origin) -> Vec<X> + Send + Sync>
@@ -32,15 +45,124 @@ pub trait Ftzr<Origin> //Self: Sized,
     //}
 }
 
-pub trait Accumulates<Feature> {
-    fn accum<Token, Iter>(iter: Iter) -> Self
-    where
-        Feature: TokenFrom<Token>,
-        Iter: Iterator<Item = Token>;
+pub trait Accumulates<Token> {
+    type State: Default;
+    fn accum_token(state: &mut Self::State, token: Token);
+
+    fn finish(state: Self::State) -> Self;
+
+    ////////////////////////////////////
+    ////////////////////////////////////
 }
 
+impl<Token, A, B> Accumulates<Token> for (A, B)
+where
+    Token: Clone,
+    A: Accumulates<Token>,
+    B: Accumulates<Token>,
+{
+    type State = (A::State, B::State);
+    fn accum_token(state: &mut Self::State, token: Token) {
+        A::accum_token(&mut state.0, token.clone());
+        B::accum_token(&mut state.1, token);
+    }
+
+    fn finish(state: Self::State) -> Self {
+        (A::finish(state.0), B::finish(state.1))
+    }
+
+    ////////////////////////////////////
+    ////////////////////////////////////
+}
+
+impl<Token> Accumulates<Token> for Vec<Token> {
+    type State = Self;
+    fn accum_token(state: &mut Self, token: Token) {
+        state.push(token);
+    }
+    fn finish(state: Self) -> Self {
+        state
+    }
+}
+
+impl<Token: Eq + Hash, S: Default + BuildHasher> Accumulates<Token> for HashSet<Token, S> {
+    type State = Self;
+    fn accum_token(state: &mut Self, token: Token) {
+        state.insert(token);
+    }
+    fn finish(state: Self) -> Self {
+        state
+    }
+}
+
+impl<Token, N, S> Accumulates<Token> for HashMap<Token, N, S>
+where
+    Token: Eq + Hash,
+    N: Default + AddAssign + From<u8>,
+    S: Default + BuildHasher,
+{
+    type State = Self;
+    fn accum_token(state: &mut Self, token: Token) {
+        *state.entry(token).or_default() += From::from(1);
+    }
+    fn finish(state: Self) -> Self {
+        state
+    }
+}
+
+impl Accumulates<&[&str]> for String {
+    type State = Self;
+
+    #[inline]
+    fn accum_token(state: &mut Self::State, tokens: &[&str]) {
+        let mut x = 0;
+        let len = tokens.len();
+        for t in tokens.iter() {
+            state.push_str(*t);
+            if x != len - 1 {
+                state.push_str("  ");
+            }
+            x += 1
+        }
+    }
+    #[inline]
+    fn finish(state: Self::State) -> Self {
+        state
+    }
+}
+
+impl<'a> Accumulates<&'a [char]> for String {
+    type State = Self;
+
+    #[inline]
+    fn accum_token(state: &mut Self::State, tokens: &'a [char]) {
+        state.extend(tokens.iter())
+    }
+    #[inline]
+    fn finish(state: Self::State) -> Self {
+        state
+    }
+}
+
+impl<'a> Accumulates<&'a [u8]> for String {
+    type State = Self;
+
+    #[inline]
+    fn accum_token(state: &mut Self::State, tokens: &'a [u8]) {
+        state.extend(tokens.iter().map(|token| {
+            let chr: char = From::from(*token);
+            chr
+        }))
+    }
+    #[inline]
+    fn finish(state: Self::State) -> Self {
+        state
+    }
+}
+
+/*
 macro_rules! impl_accum_fromiter {
-    ($t:ty) => {
+    ($t:ty, $state:ty) => {
         /*
         impl<Feature> Accumulates<Feature> for $t {
             fn accum<Token, Iter>(iter: Iter) -> Self
@@ -51,16 +173,16 @@ macro_rules! impl_accum_fromiter {
                 Iterator::collect(iter.map(From::from))
             }
         } */
+        pub trait Accumulates<Feature> {
+            type State = $state;
+            fn accum_token(state: &mut Self::State, token: Token) {
 
-        impl<Feature> Accumulates<Feature> for $t {
-            fn accum<Token, Iter>(iter: Iter) -> Self
-            where
-                Feature: TokenFrom<Token>,
-                Iter: Iterator<Item = Token>,
-            {
-                Iterator::collect(iter.into_iter().map(TokenFrom::from))
             }
+            fn finish(state: Self::State) -> Self;
+            ////////////////////////////////////
+            ////////////////////////////////////
         }
+
     };
 }
 impl_accum_fromiter!(Box<[Feature]>);
@@ -147,3 +269,4 @@ where
         bag
     }
 }
+ */

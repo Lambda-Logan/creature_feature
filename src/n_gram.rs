@@ -1,6 +1,5 @@
-use crate::accum_ftzr::Ftzr;
+use crate::accum_ftzr::{Ftzr, IterFtzr};
 use std::convert::{TryFrom, TryInto};
-use std::hash::Hash;
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug, Default)]
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
 pub struct NGram<const N: usize>();
@@ -34,7 +33,7 @@ where
     }
 }
 
-impl<'a, T: Hash, const N: usize> Ftzr<&'a [T]> for NGram<N>
+impl<'a, T, const N: usize> IterFtzr<&'a [T]> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
 {
@@ -51,7 +50,7 @@ where
     }
 }
 
-impl<'a, T: Hash, const N: usize> Ftzr<&'a Vec<T>> for NGram<N>
+impl<'a, T, const N: usize> IterFtzr<&'a Vec<T>> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
 {
@@ -68,7 +67,7 @@ where
     }
 }
 
-impl<'a, const N: usize> Ftzr<&'a str> for NGram<N>
+impl<'a, const N: usize> IterFtzr<&'a str> for NGram<N>
 where
     [u8; N]: TryFrom<&'a [u8]>,
 {
@@ -85,7 +84,7 @@ where
     }
 }
 
-impl<'a, T: Hash, const N: usize> Ftzr<&'a [T; N]> for NGram<N>
+impl<'a, T, const N: usize> IterFtzr<&'a [T; N]> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
 {
@@ -104,4 +103,19 @@ where
 
 pub fn n_gram<const N: usize>() -> NGram<N> {
     NGram::<N>()
+}
+
+impl<Origin, const N: usize> Ftzr<Origin> for NGram<N>
+where
+    Self: IterFtzr<Origin>,
+{
+    type TokenGroup = <Self as IterFtzr<Origin>>::TokenGroup;
+    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        for t in self.extract_tokens(origin) {
+            push(t)
+        }
+    }
 }

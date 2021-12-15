@@ -1,7 +1,6 @@
-use crate::accum_ftzr::Ftzr;
+use crate::accum_ftzr::{Ftzr, IterFtzr};
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
-use std::hash::Hash;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
@@ -21,10 +20,10 @@ pub fn bookends<A, B>(front: (usize, A), back: (B, usize)) -> BookEnds<A, B> {
     }
 }
 
-impl<'a, T: 'a, TA: 'a + Hash, TB: 'a + Hash, A, B> Ftzr<&'a [T]> for BookEnds<A, B>
+impl<'a, T: 'a, TA: 'a, TB: 'a, A, B> IterFtzr<&'a [T]> for BookEnds<A, B>
 where
-    A: Ftzr<&'a [T], TokenGroup = TA>,
-    B: Ftzr<&'a [T], TokenGroup = TB>,
+    A: IterFtzr<&'a [T], TokenGroup = TA>,
+    B: IterFtzr<&'a [T], TokenGroup = TB>,
 {
     type TokenGroup = FrontBack<TA, TB>;
     type Iter = BookEndsIter<A::Iter, B::Iter>;
@@ -98,6 +97,21 @@ where
         match x {
             FrontBack::Front(a) => Ok(TokenFrom::from(a)),
             FrontBack::Back(a) => Err(TokenFrom::from(a)),
+        }
+    }
+}
+
+impl<Origin, A, B> Ftzr<Origin> for BookEnds<A, B>
+where
+    Self: IterFtzr<Origin>,
+{
+    type TokenGroup = <Self as IterFtzr<Origin>>::TokenGroup;
+    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        for t in self.extract_tokens(origin) {
+            push(t)
         }
     }
 }

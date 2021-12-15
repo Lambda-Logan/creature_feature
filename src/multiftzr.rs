@@ -1,4 +1,4 @@
-use crate::accum_ftzr::Ftzr;
+use crate::accum_ftzr::{Ftzr, IterFtzr};
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 use std::hash::{Hash, Hasher};
@@ -6,11 +6,11 @@ use std::hash::{Hash, Hasher};
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
 pub struct MultiFtzr<A, B>(pub A, pub B);
 
-impl<'a, Origin: 'a, TA: Hash, TB: Hash, A, B> Ftzr<&'a Origin> for MultiFtzr<A, B>
+impl<'a, Origin: 'a, TA: Hash, TB: Hash, A, B> IterFtzr<&'a Origin> for MultiFtzr<A, B>
 where
     Origin: ?Sized,
-    A: Ftzr<&'a Origin, TokenGroup = TA>,
-    B: Ftzr<&'a Origin, TokenGroup = TB>,
+    A: IterFtzr<&'a Origin, TokenGroup = TA>,
+    B: IterFtzr<&'a Origin, TokenGroup = TB>,
 {
     type TokenGroup = EitherGroup<TA, TB>;
     type Iter = MultiFtzrIter<A::Iter, B::Iter>;
@@ -115,5 +115,23 @@ where
                 EitherGroup::Right(a) => TokenFrom::from(a),
             }
         })
+    }
+}
+impl<Origin: Copy, A, B> Ftzr<Origin> for MultiFtzr<A, B>
+where
+    A: Ftzr<Origin>,
+    B: Ftzr<Origin>,
+{
+    type TokenGroup = EitherGroup<A::TokenGroup, B::TokenGroup>;
+    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        {
+            let mut p = |t| push(EitherGroup::Left(t));
+            self.0.push_tokens(origin, &mut p);
+        }
+        let mut p = |t| push(EitherGroup::Right(t));
+        self.1.push_tokens(origin, &mut p);
     }
 }

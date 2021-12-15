@@ -1,14 +1,19 @@
-/*#![deny(
-    missing_docs,
+#![deny(
+    unsafe_code,
+    unstable_features,
+    trivial_casts,
     missing_debug_implementations,
     missing_copy_implementations,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
+    trivial_numeric_casts
+)]
+
+/*#![deny(
+    missing_docs,
     unstable_features,
     unused_import_braces,
     unused_qualifications
 )]*/
+mod internal;
 
 mod token_from;
 //use token_from::TokenFrom;
@@ -30,7 +35,7 @@ mod n_gram;
 mod slice_gram;
 
 pub mod traits {
-    pub use super::accum_ftzr::{Accumulates, Ftzr};
+    pub use super::accum_ftzr::{Accumulates, IterFtzr};
     pub use super::token_from::TokenFrom;
 }
 

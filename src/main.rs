@@ -1,7 +1,11 @@
 //mod accumulators;
 //use accumulators::*;
 
+mod for_each;
+mod internal;
 mod token_from;
+
+mod whole;
 
 mod bench;
 
@@ -120,5 +124,5 @@ fn main() {
     }
     compile_checks::run_checks();
 
-    bench::bench();
+    //bench::bench();
 }

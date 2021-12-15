@@ -1,6 +1,5 @@
-use crate::accum_ftzr::Ftzr;
+use crate::accum_ftzr::{Ftzr, IterFtzr};
 use crate::token_from::TokenFrom;
-use std::hash::Hash;
 use std::marker::PhantomData;
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
@@ -16,8 +15,8 @@ pub struct GapGramIter<'a, A, B, T, U1, U2> {
 
 impl<'a, A, B, T, U1: 'a, U2: 'a> GapGramIter<'a, A, B, T, U1, U2> {
     fn new<
-        AF: Ftzr<&'a [T], TokenGroup = U1, Iter = A>,
-        BF: Ftzr<&'a [T], TokenGroup = U2, Iter = B>,
+        AF: IterFtzr<&'a [T], TokenGroup = U1, Iter = A>,
+        BF: IterFtzr<&'a [T], TokenGroup = U2, Iter = B>,
     >(
         origin: &'a [T],
         af: &AF,
@@ -86,10 +85,10 @@ impl<A1, A2: TokenFrom<A1>, B1, B2: TokenFrom<B1>> TokenFrom<GapPair<A1, B1>> fo
     }
 }
 
-impl<'a, T: 'a, A, B, U1: 'a + Hash, U2: 'a + Hash> Ftzr<&'a [T]> for GapGram<A, B>
+impl<'a, T: 'a, A, B, U1: 'a, U2: 'a> IterFtzr<&'a [T]> for GapGram<A, B>
 where
-    A: Ftzr<&'a [T], TokenGroup = U1>,
-    B: Ftzr<&'a [T], TokenGroup = U2>,
+    A: IterFtzr<&'a [T], TokenGroup = U1>,
+    B: IterFtzr<&'a [T], TokenGroup = U2>,
 {
     type TokenGroup = GapPair<U1, U2>;
     type Iter = GapGramIter<'a, A::Iter, B::Iter, T, U1, U2>;
@@ -104,10 +103,10 @@ where
     }
 }
 
-impl<'a, A, B, U1: 'a + Hash, U2: 'a + Hash> Ftzr<&'a str> for GapGram<A, B>
+impl<'a, A, B, U1: 'a, U2: 'a> IterFtzr<&'a str> for GapGram<A, B>
 where
-    A: Ftzr<&'a [u8], TokenGroup = U1>,
-    B: Ftzr<&'a [u8], TokenGroup = U2>,
+    A: IterFtzr<&'a [u8], TokenGroup = U1>,
+    B: IterFtzr<&'a [u8], TokenGroup = U2>,
 {
     type TokenGroup = GapPair<U1, U2>;
     type Iter = GapGramIter<'a, A::Iter, B::Iter, u8, U1, U2>;
@@ -121,10 +120,10 @@ where
     }
 }
 
-impl<'a, A, B, U1: 'a + Hash, U2: 'a + Hash> Ftzr<&'a String> for GapGram<A, B>
+impl<'a, A, B, U1: 'a, U2: 'a> IterFtzr<&'a String> for GapGram<A, B>
 where
-    A: Ftzr<&'a [u8], TokenGroup = U1>,
-    B: Ftzr<&'a [u8], TokenGroup = U2>,
+    A: IterFtzr<&'a [u8], TokenGroup = U1>,
+    B: IterFtzr<&'a [u8], TokenGroup = U2>,
 {
     type TokenGroup = GapPair<U1, U2>;
     type Iter = GapGramIter<'a, A::Iter, B::Iter, u8, U1, U2>;
@@ -145,3 +144,28 @@ pub fn gap_gram<A, B>(a: A, gap: usize, b: B) -> GapGram<A, B> {
         b: b,
     }
 }
+impl<Origin, A, B> Ftzr<Origin> for GapGram<A, B>
+where
+    Self: IterFtzr<Origin>,
+{
+    type TokenGroup = <Self as IterFtzr<Origin>>::TokenGroup;
+    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        for t in self.extract_tokens(origin) {
+            push(t)
+        }
+    }
+}
+/*
+impl<Origin: Copy, A: Ftzr<Origin>, B: Ftzr<Origin>> Ftzr<Origin> for GapGram<A, B> {
+    type TokenGroup = GapPair<A::TokenGroup, B::TokenGroup>;
+    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        for
+    }
+}
+*/

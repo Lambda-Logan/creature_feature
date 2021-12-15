@@ -1,5 +1,4 @@
-use crate::accum_ftzr::Ftzr;
-use std::hash::Hash;
+use crate::accum_ftzr::{Ftzr, IterFtzr};
 //use crate::tokengroup::TokenGroup;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
@@ -36,7 +35,7 @@ impl<'a, T: 'a> Iterator for SliceGramIter<&'a [T]> {
 }
 
 /*
-impl<'a, Origin, T: 'a> Ftzr<Origin> for SliceGram
+impl<'a, Origin, T: 'a> IterFtzr<Origin> for SliceGram
 where
     Origin: Deref<Target = &'a [T]>,
 {
@@ -56,7 +55,7 @@ where
 /*
 macro_rules! impl_slice_gram {
     ($($params:ty),*; $t:ty, $inner:ty, $map_origin:ident) => {
-        impl<'a, $($params),*> Ftzr<&'a $t> for SliceGram {
+        impl<'a, $($params),*> IterFtzr<&'a $t> for SliceGram {
             type TokenGroup = TokenGroup<&'a $t>;
             type Iter = SliceGramIter<&'a [$inner]>;
             fn chunk_size(&self) -> usize {
@@ -73,7 +72,7 @@ macro_rules! impl_slice_gram {
     };
 } */
 
-impl<'a, T: Hash> Ftzr<&'a [T]> for SliceGram {
+impl<'a, T> IterFtzr<&'a [T]> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
     fn chunk_size(&self) -> usize {
@@ -88,7 +87,7 @@ impl<'a, T: Hash> Ftzr<&'a [T]> for SliceGram {
     }
 }
 
-impl<'a, T: Hash> Ftzr<&'a Vec<T>> for SliceGram {
+impl<'a, T> IterFtzr<&'a Vec<T>> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
     fn chunk_size(&self) -> usize {
@@ -103,7 +102,7 @@ impl<'a, T: Hash> Ftzr<&'a Vec<T>> for SliceGram {
     }
 }
 
-impl<'a> Ftzr<&'a str> for SliceGram {
+impl<'a> IterFtzr<&'a str> for SliceGram {
     type TokenGroup = &'a [u8];
     type Iter = SliceGramIter<&'a [u8]>;
     fn chunk_size(&self) -> usize {
@@ -118,7 +117,7 @@ impl<'a> Ftzr<&'a str> for SliceGram {
     }
 }
 
-impl<'a, T: Hash, const N: usize> Ftzr<&'a [T; N]> for SliceGram {
+impl<'a, T, const N: usize> IterFtzr<&'a [T; N]> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
     fn chunk_size(&self) -> usize {
@@ -129,6 +128,21 @@ impl<'a, T: Hash, const N: usize> Ftzr<&'a [T; N]> for SliceGram {
             n: self.n,
             idx: 0,
             data: origin,
+        }
+    }
+}
+
+impl<Origin> Ftzr<Origin> for SliceGram
+where
+    Self: IterFtzr<Origin>,
+{
+    type TokenGroup = <Self as IterFtzr<Origin>>::TokenGroup;
+    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        for t in self.extract_tokens(origin) {
+            push(t)
         }
     }
 }
