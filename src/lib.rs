@@ -43,12 +43,13 @@ pub mod ftzrs {
     pub use super::gap_gram::gap_gram;
     pub use super::n_gram::n_gram;
     pub use super::slice_gram::slice_gram;
-    pub use super::whole_empty::{}
+    pub use super::whole_empty::{empty, whole};
     pub mod utils {
         pub use super::super::bookends::{BookEnds, BookEndsIter};
         pub use super::super::gap_gram::{GapGram, GapGramIter, GapPair};
         pub use super::super::multiftzr::{EitherGroup, MultiFtzr, MultiFtzrIter};
         pub use super::super::n_gram::{NGram, NGramIter};
         pub use super::super::slice_gram::{SliceGram, SliceGramIter};
+        pub use super::super::whole_empty::{Empty, Whole, WholeAtom};
     }
 }
