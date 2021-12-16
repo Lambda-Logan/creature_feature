@@ -235,5 +235,11 @@ pub(crate) fn run_checks() {
     let _feats: Vec<&str> = whole().featurize(ak);
     let _feats: Vec<Token<&str>> = featurizers!(whole(), SizeBasedFtzr).featurize(ak);
     let _feats: Vec<&str> = for_each(SizeBasedFtzr).featurize(doc.split_ascii_whitespace());
+
+    let nums: Vec<_> = Iterator::collect((0..32));
+    let every_other = gap_gram(n_gram::<1>(), 1, n_gram::<1>());
+    let _feats: Vec<([i32; 1], [i32; 1], [i32; 1], [i32; 1])> =
+        gap_gram(every_other, 1, every_other).featurize(&nums);
+    let _feats: Vec<([[i32; 1]; 4])> = gap_gram(every_other, 1, every_other).featurize(&nums);
     println!("{:?}", _feats);
 }

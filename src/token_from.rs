@@ -60,6 +60,12 @@ impl<'a> TokenFrom<&'a str> for String {
     }
 }
 
+impl<A: Copy, B: TokenFrom<A>> TokenFrom<[A; 1]> for Token<B> {
+    fn from(token_group: [A; 1]) -> Self {
+        Token(TokenFrom::from(token_group[0]))
+    }
+}
+
 impl TokenFrom<String> for String {
     fn from(token_group: String) -> Self {
         token_group

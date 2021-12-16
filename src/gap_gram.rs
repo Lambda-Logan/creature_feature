@@ -84,6 +84,35 @@ impl<A1, A2: From<A1>, B1, B2: From<B1>> From<GapPair<A1, B1>> for (A2, B2) {
     }
 }
 
+impl<A1, A2, B1, B2, C1, C2, D1, D2> TokenFrom<GapPair<GapPair<A1, B1>, GapPair<C1, D1>>>
+    for (A2, B2, C2, D2)
+where
+    A2: TokenFrom<A1>,
+    B2: TokenFrom<B1>,
+    C2: TokenFrom<C1>,
+    D2: TokenFrom<D1>,
+{
+    fn from(t: GapPair<GapPair<A1, B1>, GapPair<C1, D1>>) -> Self {
+        (
+            TokenFrom::from(t.0 .0),
+            TokenFrom::from(t.0 .1),
+            TokenFrom::from(t.1 .0),
+            TokenFrom::from(t.1 .1),
+        )
+    }
+}
+
+impl<A, B: TokenFrom<A>> TokenFrom<GapPair<GapPair<A, A>, GapPair<A, A>>> for [B; 4] {
+    fn from(t: GapPair<GapPair<A, A>, GapPair<A, A>>) -> Self {
+        [
+            TokenFrom::from(t.0 .0),
+            TokenFrom::from(t.0 .1),
+            TokenFrom::from(t.1 .0),
+            TokenFrom::from(t.1 .1),
+        ]
+    }
+}
+
 impl<A1, A2: TokenFrom<A1>, B1, B2: TokenFrom<B1>> TokenFrom<GapPair<A1, B1>> for (A2, B2) {
     fn from(sp: GapPair<A1, B1>) -> Self {
         (TokenFrom::from(sp.0), TokenFrom::from(sp.1))
