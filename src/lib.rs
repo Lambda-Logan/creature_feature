@@ -34,7 +34,7 @@ mod slice_gram;
 mod whole_empty;
 
 pub mod traits {
-    pub use super::accum_ftzr::{Accumulates, IterFtzr, LinearFixed};
+    pub use super::accum_ftzr::{Accumulates, Ftzr, IterFtzr, LinearFixed};
     pub use super::token_from::TokenFrom;
 }
 
