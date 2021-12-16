@@ -1,4 +1,4 @@
-use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
 use crate::internal::impl_ftrzs_2;
 use crate::token_from::TokenFrom;
 
@@ -20,8 +20,8 @@ pub struct GapGramIter<'a, A, B, T, U1, U2> {
 
 impl<'a, A, B, T, U1: 'a, U2: 'a> GapGramIter<'a, A, B, T, U1, U2> {
     fn new<
-        AF: IterFtzr<&'a [T], TokenGroup = U1, Iter = A>,
-        BF: IterFtzr<&'a [T], TokenGroup = U2, Iter = B>,
+        AF: LinearFixed + IterFtzr<&'a [T], TokenGroup = U1, Iter = A>,
+        BF: LinearFixed + IterFtzr<&'a [T], TokenGroup = U2, Iter = B>,
     >(
         origin: &'a [T],
         af: &AF,
@@ -90,17 +90,19 @@ impl<A1, A2: TokenFrom<A1>, B1, B2: TokenFrom<B1>> TokenFrom<GapPair<A1, B1>> fo
     }
 }
 
-impl<'a, T: 'a, A, B, U1: 'a, U2: 'a> IterFtzr<&'a [T]> for GapGram<A, B>
-where
-    A: IterFtzr<&'a [T], TokenGroup = U1>,
-    B: IterFtzr<&'a [T], TokenGroup = U2>,
-{
-    type TokenGroup = GapPair<U1, U2>;
-    type Iter = GapGramIter<'a, A::Iter, B::Iter, T, U1, U2>;
-
+impl<A: LinearFixed, B: LinearFixed> LinearFixed for GapGram<A, B> {
     fn chunk_size(&self) -> usize {
         self.a.chunk_size() + self.gap + self.b.chunk_size()
     }
+}
+
+impl<'a, T: 'a, A, B, U1: 'a, U2: 'a> IterFtzr<&'a [T]> for GapGram<A, B>
+where
+    A: LinearFixed + IterFtzr<&'a [T], TokenGroup = U1>,
+    B: LinearFixed + IterFtzr<&'a [T], TokenGroup = U2>,
+{
+    type TokenGroup = GapPair<U1, U2>;
+    type Iter = GapGramIter<'a, A::Iter, B::Iter, T, U1, U2>;
 
     fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
         //unimplemented!()
@@ -147,6 +149,12 @@ where
 pub fn gap_gram<A, B>(a: A, gap: usize, b: B) -> GapGram<A, B> {
     GapGram { a, gap, b }
 }
+///TODO: a user-implemented featurizer 'F' must impl  IterFtzr (not just Ftzr)
+/// in order for GapGram<F,_> or GapGram<_,F> to impl Ftzr
+/// ForEach and MultiFtzr do not have this limitation
+/// (but BookEnds does)
+/// maybe use a macro similar to internal::impl_ftrzs ??
+
 impl<Origin, A, B> Ftzr<Origin> for GapGram<A, B>
 where
     Self: IterFtzr<Origin>,

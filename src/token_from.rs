@@ -48,6 +48,23 @@ impl<'a> TokenFrom<&'a [u8]> for &'a str {
         from_utf8(token_group).unwrap()
     }
 }
+impl<'a> TokenFrom<&'a str> for &'a str {
+    fn from(token_group: &'a str) -> Self {
+        token_group
+    }
+}
+
+impl<'a> TokenFrom<&'a str> for String {
+    fn from(token_group: &'a str) -> Self {
+        token_group.to_string()
+    }
+}
+
+impl TokenFrom<String> for String {
+    fn from(token_group: String) -> Self {
+        token_group
+    }
+}
 
 impl<'a> TokenFrom<&'a [u8]> for String {
     fn from(token_group: &'a [u8]) -> Self {

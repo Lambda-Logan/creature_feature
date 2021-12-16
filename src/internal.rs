@@ -10,9 +10,7 @@ macro_rules! impl_ftrzs {
         {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
                 self.extract_tokens(origin.as_slice())
             }
@@ -23,9 +21,7 @@ macro_rules! impl_ftrzs {
         {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
                 self.extract_tokens(&origin[..])
             }
@@ -36,9 +32,7 @@ macro_rules! impl_ftrzs {
         {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
                 self.extract_tokens(origin.as_bytes())
             }
@@ -50,9 +44,7 @@ macro_rules! impl_ftrzs {
         {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
                 self.extract_tokens(origin.as_str().as_bytes())
             }
@@ -84,9 +76,7 @@ macro_rules! impl_ftrzs_2 {
         {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
                 self.extract_tokens(origin.as_slice())
             }
@@ -97,9 +87,7 @@ macro_rules! impl_ftrzs_2 {
         {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
                 self.extract_tokens(&origin[..])
             }
@@ -110,9 +98,7 @@ macro_rules! impl_ftrzs_2 {
         {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
                 self.extract_tokens(origin.as_bytes())
             }
@@ -124,14 +110,11 @@ macro_rules! impl_ftrzs_2 {
         {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
-            fn chunk_size(&self) -> usize {
-                unimplemented!() //<self as IterFtzr<&'a [T]>>.chunk_size()
-            }
+
             fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
                 self.extract_tokens(origin.as_str().as_bytes())
             }
         }
     };
 }
-
 pub(crate) use impl_ftrzs_2;

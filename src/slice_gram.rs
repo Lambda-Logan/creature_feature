@@ -1,4 +1,4 @@
-use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
 
 use crate::internal::impl_ftrzs;
 
@@ -75,13 +75,15 @@ macro_rules! impl_slice_gram {
         }
     };
 } */
-
-impl<'a, T> IterFtzr<&'a [T]> for SliceGram {
-    type TokenGroup = &'a [T];
-    type Iter = SliceGramIter<&'a [T]>;
+impl LinearFixed for SliceGram {
     fn chunk_size(&self) -> usize {
         self.n
     }
+}
+impl<'a, T> IterFtzr<&'a [T]> for SliceGram {
+    type TokenGroup = &'a [T];
+    type Iter = SliceGramIter<&'a [T]>;
+
     fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
         SliceGramIter {
             n: self.n,

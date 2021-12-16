@@ -1,4 +1,4 @@
-use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
 use crate::internal::impl_ftrzs;
 use crate::token_from::TokenFrom;
 
@@ -64,9 +64,6 @@ impl<T, Q: IntoIterator<Item = T>> TokenFrom<WholeAtom<Q>> for Vec<T> {
 impl<'a, T> IterFtzr<&'a [T]> for Whole {
     type TokenGroup = WholeAtom<&'a [T]>;
     type Iter = std::option::IntoIter<Self::TokenGroup>;
-    fn chunk_size(&self) -> usize {
-        unimplemented!()
-    }
     fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
         Some(WholeAtom(origin)).into_iter()
     }
@@ -77,12 +74,25 @@ impl_ftrzs!(Whole);
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Empty;
 
-impl<'a, T> IterFtzr<&'a [T]> for Empty {
-    type TokenGroup = [T; 1];
-    type Iter = std::option::IntoIter<Self::TokenGroup>;
-    fn chunk_size(&self) -> usize {
-        unimplemented!()
+#[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct EmptyAtom;
+
+impl<D: Default> TokenFrom<EmptyAtom> for D {
+    fn from(x: EmptyAtom) -> D {
+        Default::default()
     }
+}
+
+impl LinearFixed for Empty {
+    fn chunk_size(&self) -> usize {
+        0
+    }
+}
+
+impl<'a, T> IterFtzr<&'a [T]> for Empty {
+    type TokenGroup = EmptyAtom;
+    type Iter = std::option::IntoIter<Self::TokenGroup>;
     fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
         None.into_iter()
     }

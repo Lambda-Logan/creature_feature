@@ -18,10 +18,6 @@ where
     type TokenGroup = EitherGroup<TA, TB>;
     type Iter = MultiFtzrIter<A::Iter, B::Iter>;
 
-    fn chunk_size(&self) -> usize {
-        (self.0.chunk_size() + self.1.chunk_size()) / 2
-    }
-
     fn extract_tokens(&self, origin: &'a Origin) -> Self::Iter {
         MultiFtzrIter(
             true,

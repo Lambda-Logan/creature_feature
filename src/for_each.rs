@@ -1,4 +1,4 @@
-use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
@@ -36,6 +36,12 @@ where
     }
 }
 
+impl<F: LinearFixed, T> LinearFixed for ForEach<F, T> {
+    fn chunk_size(&self) -> usize {
+        self.0.chunk_size()
+    }
+}
+
 impl<F, Sentence, Word> IterFtzr<Sentence> for ForEach<F, (Sentence, Word)>
 where
     Sentence: IntoIterator<Item = Word>,
@@ -45,9 +51,6 @@ where
     type Iter = ForEachIter<F, Sentence, Word, Sentence::IntoIter, F::Iter>;
     fn extract_tokens(&self, origin: Sentence) -> Self::Iter {
         unimplemented!("ForEach does not yet impl IterFtzr... Feel free to file a PR")
-    }
-    fn chunk_size(&self) -> usize {
-        self.0.chunk_size()
     }
 }
 

@@ -1,4 +1,5 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::n_gram::NGram;
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 #[cfg(feature = "serde")]
@@ -29,10 +30,6 @@ where
 {
     type TokenGroup = FrontBack<TA, TB>;
     type Iter = BookEndsIter<A::Iter, B::Iter>;
-
-    fn chunk_size(&self) -> usize {
-        (self.front.chunk_size() + self.back.chunk_size()) / 2
-    }
 
     fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
         BookEndsIter(
@@ -102,6 +99,12 @@ where
         }
     }
 }
+
+///TODO: a user-implemented featurizer 'F' must impl  IterFtzr (not just Ftzr)
+/// in order for BookEnds<F,_> or BookEnds<_,F> to impl Ftzr
+/// ForEach and MultiFtzr do not have this limitation
+/// (but GapGram does)
+/// maybe use a macro similar to internal::impl_ftrzs ??
 
 impl<Origin, A, B> Ftzr<Origin> for BookEnds<A, B>
 where

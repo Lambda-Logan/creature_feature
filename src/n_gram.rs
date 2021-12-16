@@ -1,4 +1,4 @@
-use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
@@ -42,14 +42,18 @@ where
 {
     type TokenGroup = [T; N];
     type Iter = NGramIter<'a, T, N>;
-    fn chunk_size(&self) -> usize {
-        N
-    }
+
     fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
         NGramIter {
             idx: 0,
             data: origin,
         }
+    }
+}
+
+impl<const N: usize> LinearFixed for NGram<N> {
+    fn chunk_size(&self) -> usize {
+        N
     }
 }
 
@@ -59,9 +63,7 @@ where
 {
     type TokenGroup = [T; N];
     type Iter = NGramIter<'a, T, N>;
-    fn chunk_size(&self) -> usize {
-        N
-    }
+
     fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
         NGramIter {
             idx: 0,
@@ -76,9 +78,7 @@ where
 {
     type TokenGroup = [u8; N];
     type Iter = NGramIter<'a, u8, N>;
-    fn chunk_size(&self) -> usize {
-        N
-    }
+
     fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
         NGramIter {
             idx: 0,
@@ -93,9 +93,7 @@ where
 {
     type TokenGroup = [T; N];
     type Iter = NGramIter<'a, T, N>;
-    fn chunk_size(&self) -> usize {
-        N
-    }
+
     fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
         NGramIter {
             idx: 0,

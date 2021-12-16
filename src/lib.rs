@@ -50,6 +50,6 @@ pub mod ftzrs {
         pub use super::super::multiftzr::{EitherGroup, MultiFtzr, MultiFtzrIter};
         pub use super::super::n_gram::{NGram, NGramIter};
         pub use super::super::slice_gram::{SliceGram, SliceGramIter};
-        pub use super::super::whole_empty::{Empty, Whole, WholeAtom};
+        pub use super::super::whole_empty::{Empty, EmptyAtom, Whole, WholeAtom};
     }
 }

@@ -10,6 +10,9 @@ pub trait IterFtzr<Origin> {
     type TokenGroup;
     type Iter: Iterator<Item = Self::TokenGroup>;
     fn extract_tokens(&self, origin: Origin) -> Self::Iter;
+}
+
+pub trait LinearFixed {
     fn chunk_size(&self) -> usize;
 }
 
@@ -32,6 +35,15 @@ pub trait Ftzr<Origin> {
         }
         //Self::TokenGroup: TokenFrom<Self::TokenGroup>
         A::finish(state)
+    }
+
+    fn push_tokens_from<Push, T>(&self, origin: Origin, push: &mut Push)
+    where
+        Push: FnMut(T) -> (),
+        T: TokenFrom<Self::TokenGroup>,
+    {
+        let mut _push = |t| push(TokenFrom::from(t));
+        self.push_tokens(origin, &mut _push)
     }
 
     fn as_fn<X: TokenFrom<Self::TokenGroup>>(self) -> Arc<dyn Fn(Origin) -> Vec<X> + Send + Sync>

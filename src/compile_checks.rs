@@ -226,6 +226,28 @@ pub(crate) fn run_checks() {
     let _feats: Vec<Token<&str>> =
         for_each(featurizers!(bislice, slice_gram(3))).featurize(doc.split_ascii_whitespace());
     let vecdoc: Vec<&str> = Iterator::collect(doc.split_ascii_whitespace());
-    let _feats: Vec<(&[&str], &[&str])> = gap_gram(whole(), 2, whole()).featurize(&vecdoc);
+    let _feats: Vec<((&[&str], &[&str]), (&[&str], &[&str]))> =
+        gap_gram(g_s_bigram, 2, g_s_bigram).featurize(&vecdoc);
+
+    struct SizeBasedFtzr;
+
+    impl<'a> Ftzr<&'a str> for SizeBasedFtzr {
+        type TokenGroup = &'a str;
+        fn push_tokens<Push>(&self, origin: &'a str, push: &mut Push)
+        where
+            Push: FnMut(Self::TokenGroup) -> (),
+        {
+            if origin.len() < 6 {
+                slice_gram(2).push_tokens_from(origin, push);
+            } else {
+                slice_gram(4).push_tokens_from(origin, push);
+            }
+        }
+    }
+
+    let _feats: Vec<&str> = SizeBasedFtzr.featurize(&"this ");
+    let _feats: Vec<&str> = whole().featurize(ak);
+    let _feats: Vec<Token<&str>> = featurizers!(whole(), SizeBasedFtzr).featurize(ak);
+    let _feats: Vec<&str> = for_each(SizeBasedFtzr).featurize(doc.split_ascii_whitespace());
     println!("{:?}", _feats);
 }
