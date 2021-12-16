@@ -1,9 +1,11 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct BookEnds<A, B> {
     front: A,
     back: B,
@@ -43,7 +45,7 @@ where
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct BookEndsIter<A, B>(bool, A, B);
 
 impl<A, B> Iterator for BookEndsIter<A, B>
@@ -70,7 +72,7 @@ where
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum FrontBack<A, B> {
     Front(A),
     Back(B),

@@ -1,8 +1,10 @@
+#![allow(warnings, unused)]
+
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 
-use crate::tokengroup::*;
-
 use crate::token_from::TokenFrom;
+use crate::tokengroup::*;
+use crate::whole_empty::*;
 
 use crate::for_each::*;
 
@@ -29,8 +31,8 @@ where
 
 macro_rules! test_vec_feats {
     ($f:expr,  $out:ty, $v:expr) => {
-        let feats: Vec<$out> = $f;
-        assert_eq!(feats, $v);
+        let _feats: Vec<$out> = $f;
+        assert_eq!(_feats, $v);
     };
 }
 /*
@@ -120,9 +122,9 @@ pub(crate) fn run_checks() {
         test_vec_feats!(bislice.featurize(ak), Feature64, ak_bigrams_feat64);
 
         //        GapGram
-        let feats: Vec<(String, String)> = gap_gram(bigram, 2, bigram).featurize(ak);
-        let feats: Vec<(&str, &str)> = gap_gram(bislice, 2, bislice).featurize(ak);
-        let feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(ak);
+        let _feats: Vec<(String, String)> = gap_gram(bigram, 2, bigram).featurize(ak);
+        let _feats: Vec<(&str, &str)> = gap_gram(bislice, 2, bislice).featurize(ak);
+        let _feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(ak);
     }
 
     ////////////////////////////
@@ -140,9 +142,9 @@ pub(crate) fn run_checks() {
         test_vec_feats!(bislice.featurize(ak), Feature64, ak_bigrams_feat64);
 
         //        GapGram
-        let feats: Vec<(String, String)> = gap_gram(bigram, 2, bigram).featurize(t);
-        let feats: Vec<(&str, &str)> = gap_gram(bislice, 2, bislice).featurize(t);
-        let feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(t);
+        let _feats: Vec<(String, String)> = gap_gram(bigram, 2, bigram).featurize(t);
+        let _feats: Vec<(&str, &str)> = gap_gram(bislice, 2, bislice).featurize(t);
+        let _feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(t);
     }
 
     ////////////////////////////
@@ -172,8 +174,8 @@ pub(crate) fn run_checks() {
             &[usize],
             bigrams_12_usize
         ); //NOTICE &[usize]
-        let feats: Vec<&[usize]> = bislice.featurize(&n_usize_12[..]); //NOTICE &[usize]
-                                                                       // NOTICE ... no Vec<usize>
+        let _feats: Vec<&[usize]> = bislice.featurize(&n_usize_12[..]); //NOTICE &[usize]
+                                                                        // NOTICE ... no Vec<usize>
         test_vec_feats!(
             bislice.featurize(&n_usize_12[..]),
             Feature64,
@@ -181,32 +183,32 @@ pub(crate) fn run_checks() {
         );
 
         ////////// GapGram
-        let feats: Vec<([usize; 2], [usize; 2])> =
+        let _feats: Vec<([usize; 2], [usize; 2])> =
             gap_gram(bigram, 2, bigram).featurize(&n_usize_12[..]);
-        let feats: Vec<(&[usize], &[usize])> =
+        let _feats: Vec<(&[usize], &[usize])> =
             gap_gram(bislice, 2, bislice).featurize(&n_usize_12[..]);
-        let feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(&n_usize_12[..]);
+        let _feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(&n_usize_12[..]);
     }
-    let feats: Vec<Result<Vec<usize>, Feature64>> =
+    let _feats: Vec<Result<Vec<usize>, Feature64>> =
         bookends((4, bigram), (bigram, 4)).featurize(n_usize_12);
-    let feats: Vec<Token<Vec<usize>>> = //TODO is this ok????
+    let _feats: Vec<Token<Vec<usize>>> = //TODO is this ok????
         bookends((4, bigram), (bigram, 4)).featurize(n_usize_12);
     //let e: EmptyFtzr<usize> = EmptyFtzr::new();
 
-    let feats: Vec<Token<String>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
+    let _feats: Vec<Token<String>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
 
-    let feats: Vec<Token<Feature64>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
-    //let feats: Vec<EitherGroup<_, _>> = MultiFtzr(bigram, n_gram::<3>()).featurize(ak);
+    let _feats: Vec<Token<Feature64>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
+    //let _feats: Vec<EitherGroup<_, _>> = MultiFtzr(bigram, n_gram::<3>()).featurize(ak);
 
     //TODO
-    //let feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(n_usize_12);
-    let feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(&n_usize_12[..]);
+    //let _feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(n_usize_12);
+    let _feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(&n_usize_12[..]);
     use std::collections::LinkedList;
     //TODO Linked list & friends
-    //let feats: LinkedList<(&str, String)> = gap_gram(bislice, 4, n_gram::<3>()).featurize(ak);
-    let feats: HashMap<&str, u8> = bislice.featurize(ak);
+    //let _feats: LinkedList<(&str, String)> = gap_gram(bislice, 4, n_gram::<3>()).featurize(ak);
+    let _feats: HashMap<&str, u8> = bislice.featurize(ak);
 
-    let feats: Vec<&str> = for_each(bislice).featurize(sentence.split_ascii_whitespace());
+    let _feats: Vec<&str> = for_each(bislice).featurize(sentence.split_ascii_whitespace());
 
     let doc = r#"
     i went to the market
@@ -215,7 +217,15 @@ pub(crate) fn run_checks() {
     jig itty jig
 "#;
     let doc_iter = doc.lines().map(|line| line.split_ascii_whitespace());
-    let feats: Vec<&str> = for_each(for_each(bislice)).featurize(doc_iter);
 
-    println!("{:?}", feats);
+    //TODO
+    //let _feats: Vec<Token<Feature64>> =
+    //    for_each(for_each(bislice.and_then(slice_gram(3)))).featurize(doc_iter);
+    //let _feats: Vec<Token<String>> = n_gram::<2>().and_then(n_gram::<3>()).featurize(doc);
+    let _feats: Vec<Token<String>> = featurizers!(bigram, n_gram::<3>()).featurize(doc);
+    let _feats: Vec<Token<&str>> =
+        for_each(featurizers!(bislice, slice_gram(3))).featurize(doc.split_ascii_whitespace());
+    let vecdoc: Vec<&str> = Iterator::collect(doc.split_ascii_whitespace());
+    let _feats: Vec<(&[&str], &[&str])> = gap_gram(whole(), 2, whole()).featurize(&vecdoc);
+    println!("{:?}", _feats);
 }

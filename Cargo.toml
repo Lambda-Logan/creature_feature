@@ -13,7 +13,7 @@ edition = "2018"
 serde1 = ["serde"]
 
 [package.metadata.playground]
-features = ["serde1"]
+features = ["serde"]
 
 
 

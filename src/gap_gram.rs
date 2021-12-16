@@ -1,8 +1,13 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::internal::impl_ftrzs_2;
 use crate::token_from::TokenFrom;
+
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
+
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GapGramIter<'a, A, B, T, U1, U2> {
     a: A,
     b: B,
@@ -26,9 +31,9 @@ impl<'a, A, B, T, U1: 'a, U2: 'a> GapGramIter<'a, A, B, T, U1, U2> {
         let a = af.extract_tokens(origin);
         let b = bf.extract_tokens(&origin[af.chunk_size() + gap..]);
         GapGramIter {
-            a: a,
-            b: b,
-            gap: gap,
+            a,
+            b,
+            gap,
             idx: 0,
             data: origin,
             tok2: Default::default(),
@@ -62,7 +67,7 @@ where
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GapGram<A, B> {
     a: A,
     gap: usize,
@@ -70,7 +75,7 @@ pub struct GapGram<A, B> {
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GapPair<A, B>(pub(crate) A, pub(crate) B, pub(crate) u16); //TODO make names fields
 
 impl<A1, A2: From<A1>, B1, B2: From<B1>> From<GapPair<A1, B1>> for (A2, B2) {
@@ -103,6 +108,8 @@ where
     }
 }
 
+impl_ftrzs_2!(GapGram<X,Y>);
+/*
 impl<'a, A, B, U1: 'a, U2: 'a> IterFtzr<&'a str> for GapGram<A, B>
 where
     A: IterFtzr<&'a [u8], TokenGroup = U1>,
@@ -135,14 +142,10 @@ where
     fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
         GapGramIter::new(&origin.as_bytes(), &self.a, self.gap, &self.b)
     }
-}
+}*/
 
 pub fn gap_gram<A, B>(a: A, gap: usize, b: B) -> GapGram<A, B> {
-    GapGram {
-        a: a,
-        gap: gap,
-        b: b,
-    }
+    GapGram { a, gap, b }
 }
 impl<Origin, A, B> Ftzr<Origin> for GapGram<A, B>
 where

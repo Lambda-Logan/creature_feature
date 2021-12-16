@@ -1,18 +1,22 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
-//use crate::tokengroup::TokenGroup;
+
+use crate::internal::impl_ftrzs;
+
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct SliceGram {
     n: usize,
 }
 
 pub fn slice_gram(n: usize) -> SliceGram {
-    SliceGram { n: n }
+    SliceGram { n }
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct SliceGramIter<Origin> {
     n: usize,
     idx: usize,
@@ -87,6 +91,9 @@ impl<'a, T> IterFtzr<&'a [T]> for SliceGram {
     }
 }
 
+impl_ftrzs!(SliceGram);
+
+/*
 impl<'a, T> IterFtzr<&'a Vec<T>> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
@@ -130,19 +137,4 @@ impl<'a, T, const N: usize> IterFtzr<&'a [T; N]> for SliceGram {
             data: origin,
         }
     }
-}
-
-impl<Origin> Ftzr<Origin> for SliceGram
-where
-    Self: IterFtzr<Origin>,
-{
-    type TokenGroup = <Self as IterFtzr<Origin>>::TokenGroup;
-    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
-    where
-        Push: FnMut(Self::TokenGroup) -> (),
-    {
-        for t in self.extract_tokens(origin) {
-            push(t)
-        }
-    }
-}
+}*/

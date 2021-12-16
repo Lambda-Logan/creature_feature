@@ -1,13 +1,14 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
-use std::iter::Fuse;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
-pub struct ForEach<F, Sentence, Word>(F, PhantomData<(Sentence, Word)>);
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct ForEach<F, Meta>(F, PhantomData<Meta>);
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ForEachIter<F, Sentence, Word, SentIter, FWordIter> {
     ftzr: F,
     sentence: SentIter,
@@ -35,7 +36,7 @@ where
     }
 }
 
-impl<F, Sentence, Word> IterFtzr<Sentence> for ForEach<F, Sentence, Word>
+impl<F, Sentence, Word> IterFtzr<Sentence> for ForEach<F, (Sentence, Word)>
 where
     Sentence: IntoIterator<Item = Word>,
     F: IterFtzr<Word>,
@@ -50,7 +51,7 @@ where
     }
 }
 
-impl<F, Sentence, Word> Ftzr<Sentence> for ForEach<F, Sentence, Word>
+impl<F, Sentence, Word> Ftzr<Sentence> for ForEach<F, (Sentence, Word)>
 where
     Sentence: IntoIterator<Item = Word>,
     F: Ftzr<Word>,
@@ -66,6 +67,6 @@ where
     }
 }
 
-pub fn for_each<F, Sentence, Word>(f: F) -> ForEach<F, Sentence, Word> {
+pub fn for_each<F, Sentence, Word>(f: F) -> ForEach<F, (Sentence, Word)> {
     ForEach(f, PhantomData::default())
 }

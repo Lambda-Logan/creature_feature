@@ -1,9 +1,12 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
+
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct MultiFtzr<A, B>(pub A, pub B);
 
 impl<'a, Origin: 'a, TA: Hash, TB: Hash, A, B> IterFtzr<&'a Origin> for MultiFtzr<A, B>
@@ -29,7 +32,7 @@ where
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct MultiFtzrIter<A, B>(bool, A, B);
 
 impl<A, B> Iterator for MultiFtzrIter<A, B>
@@ -56,7 +59,7 @@ where
 }
 
 #[derive(Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum EitherGroup<A, B> {
     Left(A),
     Right(B),

@@ -1,3 +1,4 @@
+use crate::multiftzr::MultiFtzr;
 use crate::token_from::TokenFrom;
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use std::hash::{BuildHasher, Hash};
@@ -39,6 +40,14 @@ pub trait Ftzr<Origin> {
     {
         Arc::new(move |o| self.featurize(o))
     }
+
+    /*
+    fn and_then<T: Ftzr<Origin>>(self, ftzr: T) -> MultiFtzr<Self, T>
+    where
+        Self: Sized,
+    {
+        MultiFtzr(self, ftzr)
+    } */
 
     //fn derefed<'a>(&'a self) -> DerefedFtzr<'a, Self> {
     //    DerefedFtzr(self)

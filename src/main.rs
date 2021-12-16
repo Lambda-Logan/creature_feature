@@ -1,11 +1,14 @@
 //mod accumulators;
 //use accumulators::*;
-
+#![allow(unused)]
+//#[allow(warnings, unused)]
 mod for_each;
+
+#[macro_use]
 mod internal;
 mod token_from;
 
-mod whole;
+mod whole_empty;
 
 mod bench;
 

@@ -1,5 +1,5 @@
+use crate::tokengroup::Token;
 use std::str::from_utf8;
-
 pub trait TokenFrom<T> {
     fn from(t: T) -> Self;
 }
@@ -52,5 +52,17 @@ impl<'a> TokenFrom<&'a [u8]> for &'a str {
 impl<'a> TokenFrom<&'a [u8]> for String {
     fn from(token_group: &'a [u8]) -> Self {
         from_utf8(token_group).unwrap().to_owned()
+    }
+}
+
+impl<A, B, C> TokenFrom<Result<A, B>> for Token<C>
+where
+    C: TokenFrom<A> + TokenFrom<B>,
+{
+    fn from(r: Result<A, B>) -> Token<C> {
+        Token(match r {
+            Err(x) => TokenFrom::from(x),
+            Ok(x) => TokenFrom::from(x),
+        })
     }
 }

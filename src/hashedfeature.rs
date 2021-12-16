@@ -2,11 +2,12 @@ use crate::gap_gram::GapPair;
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 use fxhash::FxHasher64;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
 use std::iter::FromIterator;
-
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Feature64(pub(crate) u64);
 
 impl<A: Hash> FromIterator<A> for Feature64 {
@@ -49,7 +50,7 @@ impl<T: Hash, V: Hash> From<GapPair<T, V>> for Feature64 {
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct HashedFeature<U>(pub U);
 
 type FeatBits = u16;

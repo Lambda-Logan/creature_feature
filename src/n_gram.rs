@@ -1,11 +1,14 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
+
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug, Default)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NGram<const N: usize>();
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NGramIter<'a, T, const N: usize> {
     idx: usize,
     data: &'a [T],

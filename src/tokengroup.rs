@@ -1,4 +1,4 @@
-#[cfg(feature = "serde1")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::collections::{LinkedList, VecDeque};
 use std::hash::Hash;
@@ -9,7 +9,7 @@ use std::str::from_utf8;
 use std::sync::Arc;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug, Default)]
-#[cfg_attr(feature = "serde1", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Token<T>(pub T);
 
 impl<T> Deref for Token<T> {
