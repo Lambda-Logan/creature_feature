@@ -9,6 +9,19 @@ use std::hash::{Hash, Hasher};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct MultiFtzr<A, B>(pub A, pub B);
 
+#[macro_export]
+macro_rules! featurizers {
+    ($a:expr) => {
+        $a
+    };
+    ($a:expr $(, $tail:expr)*) => {{
+        MultiFtzr($a, featurizers!($($tail), *),
+    )
+    }};
+}
+
+pub use featurizers;
+
 impl<'a, Origin: 'a, TA: Hash, TB: Hash, A, B> IterFtzr<&'a Origin> for MultiFtzr<A, B>
 where
     Origin: ?Sized,

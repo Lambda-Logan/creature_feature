@@ -47,20 +47,6 @@ macro_rules! featurizers {
     }};
 } */
 
-#[macro_export]
-macro_rules! featurizers {
-    //() => {
-    //    (EmptyFtzr::new())
-    //};
-    ($a:expr) => {
-        $a
-    };
-    ($a:expr $(, $tail:expr)*) => {{
-        MultiFtzr($a, featurizers!($($tail), *),
-    )
-    }};
-}
-
 pub(crate) fn run_checks() {
     let bigram = n_gram::<2>();
     let bislice = slice_gram(2);

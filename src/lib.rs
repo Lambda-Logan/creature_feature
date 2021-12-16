@@ -34,13 +34,14 @@ mod slice_gram;
 mod whole_empty;
 
 pub mod traits {
-    pub use super::accum_ftzr::{Accumulates, IterFtzr};
+    pub use super::accum_ftzr::{Accumulates, IterFtzr, LinearFixed};
     pub use super::token_from::TokenFrom;
 }
 
 pub mod ftzrs {
     pub use super::bookends::bookends;
     pub use super::gap_gram::gap_gram;
+    pub use super::multiftzr::featurizers;
     pub use super::n_gram::n_gram;
     pub use super::slice_gram::slice_gram;
     pub use super::whole_empty::{empty, whole};
