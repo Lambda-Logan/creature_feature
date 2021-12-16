@@ -4,15 +4,13 @@
     trivial_casts,
     missing_debug_implementations,
     missing_copy_implementations,
-    trivial_numeric_casts
-)]
-
-/*#![deny(
-    missing_docs,
-    unstable_features,
+    trivial_numeric_casts,
     unused_import_braces,
     unused_qualifications
-)]*/
+    //missing_docs
+)]
+#![allow(unused)]
+
 mod internal;
 
 mod token_from;
@@ -33,6 +31,7 @@ mod gap_gram;
 mod multiftzr;
 mod n_gram;
 mod slice_gram;
+mod whole_empty;
 
 pub mod traits {
     pub use super::accum_ftzr::{Accumulates, IterFtzr};
@@ -44,6 +43,7 @@ pub mod ftzrs {
     pub use super::gap_gram::gap_gram;
     pub use super::n_gram::n_gram;
     pub use super::slice_gram::slice_gram;
+    pub use super::whole_empty::{}
     pub mod utils {
         pub use super::super::bookends::{BookEnds, BookEndsIter};
         pub use super::super::gap_gram::{GapGram, GapGramIter, GapPair};
