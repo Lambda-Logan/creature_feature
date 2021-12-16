@@ -241,5 +241,7 @@ pub(crate) fn run_checks() {
     let _feats: Vec<([i32; 1], [i32; 1], [i32; 1], [i32; 1])> =
         gap_gram(every_other, 1, every_other).featurize(&nums);
     let _feats: Vec<([[i32; 1]; 4])> = gap_gram(every_other, 1, every_other).featurize(&nums);
+
+    let _feats: (HashSet<Feature64>, Vec<&str>) = bislice.featurize_x2(ak);
     println!("{:?}", _feats);
 }

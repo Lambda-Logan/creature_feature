@@ -37,6 +37,28 @@ pub trait Ftzr<Origin> {
         A::finish(state)
     }
 
+    fn featurize_x2<A1, T1, A2, T2>(&self, origin: Origin) -> (A1, A2)
+    where
+        Self::TokenGroup: Clone,
+        A1: Accumulates<T1>,
+        A2: Accumulates<T2>,
+        T1: TokenFrom<Self::TokenGroup>,
+        T2: TokenFrom<Self::TokenGroup>,
+    {
+        let mut state1: A1::State = Default::default();
+        let mut state2: A2::State = Default::default();
+        {
+            let mut push = |t: Self::TokenGroup| {
+                A1::accum_token(&mut state1, TokenFrom::from(t.clone()));
+                A2::accum_token(&mut state2, TokenFrom::from(t));
+            };
+
+            self.push_tokens(origin, &mut push);
+        }
+        //Self::TokenGroup: TokenFrom<Self::TokenGroup>
+        (A1::finish(state1), A2::finish(state2))
+    }
+
     fn push_tokens_from<Push, T>(&self, origin: Origin, push: &mut Push)
     where
         Push: FnMut(T) -> (),
