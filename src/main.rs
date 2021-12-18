@@ -21,8 +21,8 @@ use bookends::*;
 mod accum_ftzr;
 use accum_ftzr::*;
 
-mod slice_gram;
-use slice_gram::*;
+mod n_slice;
+use n_slice::*;
 
 mod multiftzr;
 use multiftzr::*;
@@ -64,25 +64,27 @@ macro_rules! assert_str_lengths {
 }
 
 fn main() {
+    //bench::bench();
+    //return ();
     let abcde = "abcde";
-    assert_str_lengths!(4, slice_gram(2), abcde);
-    assert_str_lengths!(4, slice_gram(2), &abcde.to_string()); //needs & ???
-    assert_str_lengths!(4, slice_gram(2), &chars_of(abcde));
+    assert_str_lengths!(4, n_slice(2), abcde);
+    assert_str_lengths!(4, n_slice(2), &abcde.to_string()); //needs & ???
+    assert_str_lengths!(4, n_slice(2), &chars_of(abcde));
     let _1234: [u8; 4] = [1, 2, 3, 4];
-    let x: Vec<Feature64> = slice_gram(2).featurize(&_1234[..]);
-    //let x2: Vec<Vec<_>> = slice_gram(2).featurize(&_1234[..]);
-    let x2: Vec<&[u8]> = slice_gram(2).featurize(&_1234[..]);
+    let x: Vec<Feature64> = n_slice(2).featurize(&_1234[..]);
+    //let x2: Vec<Vec<_>> = n_slice(2).featurize(&_1234[..]);
+    let x2: Vec<&[u8]> = n_slice(2).featurize(&_1234[..]);
 
     ////////////////////  THIS NEEDS TO WORK
-    //let x: Vec<Vec<u8>> = slice_gram(2).featurize(&_1234[..]);
+    //let x: Vec<Vec<u8>> = n_slice(2).featurize(&_1234[..]);
 
-    //let ftzr = featurizers::book_ends((3, 3), featurizers::slice_gram(2));
+    //let ftzr = featurizers::book_ends((3, 3), featurizers::n_slice(2));
     let sentence: Vec<&str> =
         Iterator::collect("one fish two fish red fish blue fish".split_ascii_whitespace());
 
-    //let feats: Vec<Feature64> = ftzr.featurize(&sentence);
+    //let feats: Vec<Featun_slicezr.featurize(&sentence);
     //let feats2: Vec<Vec<&[&str]>> = ftzr.featurize(&sentence);
-    let s: Vec<&[&str]> = slice_gram(3).featurize(&sentence);
+    let s: Vec<&[&str]> = n_slice(3).featurize(&sentence);
     let gram: NGram<2> = Default::default();
     let kip = gap_gram(gram, 2, gram);
     /// GapGram<_, _, 2> = GapGram(gram, gram);
@@ -103,12 +105,10 @@ fn main() {
     let v: Vec<(String, String)> = kip.featurize(az);
 
     //TODO
-    //let v: Vec<GapPair<_, _>> = skip.featurize(vec.as_slice());
+    //let v: Vec<GapPain_slice skip.featurize(vec.as_slice());
     let v: Vec<(([_; 2], [_; 2]), ([_; 2], [_; 2]))> = skip.featurize(vec.as_slice());
-    let v: Vec<&str> = slice_gram(4).featurize(az);
-    let v: Vec<(&[i32], &[_])> =
-        gap_gram(slice_gram(5), 4, slice_gram(2)).featurize(vec.as_slice());
-    //let fnn = slice_gram(3).as_fn::<Feature64>();
+    let v: Vec<(&[i32], &[_])> = gap_gram(n_slice(5), 4, n_slice(2)).featurize(vec.as_slice());
+    //let fnn = n_slice(3).as_fn::<Feature64>();
     //let v: Vec<([_; 2], [_; 2], [_; 2], [_; 2])> = skip.featurize(vec.as_slice());
     //let v: TokenGroup<i32> = From::from(CopyGroup(&2));
     //let v: Vec<(&str, &str)> = kip.featurize("abcdefghijklmnopqrs");

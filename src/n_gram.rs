@@ -87,6 +87,18 @@ where
     }
 }
 
+impl<'a, const N: usize> IterFtzr<&'a String> for NGram<N>
+where
+    [u8; N]: TryFrom<&'a [u8]>,
+{
+    type TokenGroup = [u8; N];
+    type Iter = NGramIter<'a, u8, N>;
+
+    fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
+        self.extract_tokens(origin.as_str())
+    }
+}
+
 impl<'a, T, const N: usize> IterFtzr<&'a [T; N]> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
@@ -104,6 +116,14 @@ where
 
 pub fn n_gram<const N: usize>() -> NGram<N> {
     NGram::<N>()
+}
+
+pub fn bigram() -> NGram<2> {
+    NGram::<2>()
+}
+
+pub fn trigram() -> NGram<3> {
+    NGram::<3>()
 }
 
 impl<Origin, const N: usize> Ftzr<Origin> for NGram<N>

@@ -30,7 +30,7 @@ mod bookends;
 mod gap_gram;
 mod multiftzr;
 mod n_gram;
-mod slice_gram;
+mod n_slice;
 mod whole_empty;
 
 pub mod traits {
@@ -39,18 +39,44 @@ pub mod traits {
 }
 
 pub mod ftzrs {
+    /// look for doc comments '///'
+    //TODO export Multi with featurizers.
+    //TODO change featurizers to []
+    //&String not implemented
+    /*
+            let ftzr = featurizers!(
+            n_gram::<2>(),
+            n_gram::<3>(),
+            bookends((2, n_gram::<2>()), (n_gram::<2>(), 2))
+        );
+
+        push_tokens(str)
+    */
+
+    macro_rules! featurizers {
+        [$a:expr] => {
+            $a
+        };
+        [$a:expr $(, $tail:expr)*] => {{
+            use creature_feature::ftzrs::utils::MultiFtzr;
+            MultiFtzr($a, featurizers!($($tail), *),
+        )
+        }};
+    }
+
     pub use super::bookends::bookends;
     pub use super::gap_gram::gap_gram;
-    pub use super::multiftzr::featurizers;
-    pub use super::n_gram::n_gram;
-    pub use super::slice_gram::slice_gram;
+    //pub use super::multiftzr::featurizers;
+
+    pub use super::n_gram::{bigram, n_gram, trigram};
+    pub use super::n_slice::{bislice, n_slice, trislice};
     pub use super::whole_empty::{empty, whole};
     pub mod utils {
         pub use super::super::bookends::{BookEnds, BookEndsIter};
         pub use super::super::gap_gram::{GapGram, GapGramIter, GapPair};
         pub use super::super::multiftzr::{EitherGroup, MultiFtzr, MultiFtzrIter};
         pub use super::super::n_gram::{NGram, NGramIter};
-        pub use super::super::slice_gram::{SliceGram, SliceGramIter};
+        pub use super::super::n_slice::{SliceGram, SliceGramIter};
         pub use super::super::whole_empty::{Empty, EmptyAtom, Whole, WholeAtom};
     }
 }

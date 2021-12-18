@@ -8,17 +8,17 @@ use std::marker::PhantomData;
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct GapGramIter<'a, A, B, T, U1, U2> {
+pub struct GapGramIter<A, B, T, U1, U2> {
     a: A,
     b: B,
     gap: usize,
-    data: &'a [T],
+    data: T,
     idx: usize,
     tok2: PhantomData<(U1, U2)>,
     total_size: usize,
 }
 
-impl<'a, A, B, T, U1: 'a, U2: 'a> GapGramIter<'a, A, B, T, U1, U2> {
+impl<'a, A, B, T, U1: 'a, U2: 'a> GapGramIter<A, B, &'a [T], U1, U2> {
     fn new<
         AF: LinearFixed + IterFtzr<&'a [T], TokenGroup = U1, Iter = A>,
         BF: LinearFixed + IterFtzr<&'a [T], TokenGroup = U2, Iter = B>,
@@ -42,7 +42,7 @@ impl<'a, A, B, T, U1: 'a, U2: 'a> GapGramIter<'a, A, B, T, U1, U2> {
     }
 }
 
-impl<'a, A, B, T, U1, U2: 'a> Iterator for GapGramIter<'a, A, B, T, U1, U2>
+impl<'a, A, B, T, U1, U2: 'a> Iterator for GapGramIter<A, B, &'a [T], U1, U2>
 where
     A: Iterator<Item = U1>,
     B: Iterator<Item = U2>,
@@ -131,10 +131,9 @@ where
     B: LinearFixed + IterFtzr<&'a [T], TokenGroup = U2>,
 {
     type TokenGroup = GapPair<U1, U2>;
-    type Iter = GapGramIter<'a, A::Iter, B::Iter, T, U1, U2>;
+    type Iter = GapGramIter<A::Iter, B::Iter, &'a [T], U1, U2>;
 
     fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
-        //unimplemented!()
         GapGramIter::new(origin, &self.a, self.gap, &self.b)
     }
 }
@@ -178,6 +177,30 @@ where
 pub fn gap_gram<A, B>(a: A, gap: usize, b: B) -> GapGram<A, B> {
     GapGram { a, gap, b }
 }
+
+/*
+TODO implement Ftzr in terms of Ftzr, for IterFtzr
+impl<'a, T, A, B, TA, TB> Ftzr<&'a [T]> for GapGram<A, B>
+where
+    A: Ftzr<&'a [T], TokenGroup = TA>,
+    B: Ftzr<&'a [T], TokenGroup = TB>,
+{
+    type TokenGroup = GapPair<TA, TB>;
+    fn push_tokens<Push>(&self, origin: &'a [T], push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        {
+            let mut _push = |t| push(FrontBack::Front(t));
+            self.front.push_tokens(origin, &mut _push);
+        }
+        {
+            let mut _push = |t| push(FrontBack::Back(t));
+            self.back.push_tokens(origin, &mut _push);
+        }
+    }
+} */
+
 ///TODO: a user-implemented featurizer 'F' must impl  IterFtzr (not just Ftzr)
 /// in order for GapGram<F,_> or GapGram<_,F> to impl Ftzr
 /// ForEach and MultiFtzr do not have this limitation

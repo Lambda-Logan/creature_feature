@@ -12,7 +12,7 @@ use crate::multiftzr::*;
 
 use crate::accum_ftzr::*;
 
-use crate::slice_gram::*;
+use crate::n_slice::*;
 
 use crate::gap_gram::*;
 
@@ -49,7 +49,7 @@ macro_rules! featurizers {
 
 pub(crate) fn run_checks() {
     let bigram = n_gram::<2>();
-    let bislice = slice_gram(2);
+    let bislice = n_slice(2);
     let g_bigram = gap_gram(n_gram::<1>(), 0, n_gram::<1>());
     let g_g_bigram = gap_gram(g_bigram, 2, g_bigram);
     let g_s_bigram = gap_gram(bislice, 2, bislice);
@@ -176,9 +176,9 @@ pub(crate) fn run_checks() {
         let _feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(&n_usize_12[..]);
     }
     let _feats: Vec<Result<Vec<usize>, Feature64>> =
-        bookends((4, bigram), (bigram, 4)).featurize(n_usize_12);
+        bookends((bigram, 4), (bigram, 4)).featurize(n_usize_12);
     let _feats: Vec<Token<Vec<usize>>> = //TODO is this ok????
-        bookends((4, bigram), (bigram, 4)).featurize(n_usize_12);
+        bookends((bigram, 4), (bigram, 4)).featurize(n_usize_12);
     //let e: EmptyFtzr<usize> = EmptyFtzr::new();
 
     let _feats: Vec<Token<String>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
@@ -206,11 +206,11 @@ pub(crate) fn run_checks() {
 
     //TODO
     //let _feats: Vec<Token<Feature64>> =
-    //    for_each(for_each(bislice.and_then(slice_gram(3)))).featurize(doc_iter);
+    //    for_each(for_each(bislice.and_then(n_slice(3)))).featurize(doc_iter);
     //let _feats: Vec<Token<String>> = n_gram::<2>().and_then(n_gram::<3>()).featurize(doc);
     let _feats: Vec<Token<String>> = featurizers!(bigram, n_gram::<3>()).featurize(doc);
     let _feats: Vec<Token<&str>> =
-        for_each(featurizers!(bislice, slice_gram(3))).featurize(doc.split_ascii_whitespace());
+        for_each(featurizers!(bislice, n_slice(3))).featurize(doc.split_ascii_whitespace());
     let vecdoc: Vec<&str> = Iterator::collect(doc.split_ascii_whitespace());
     let _feats: Vec<((&[&str], &[&str]), (&[&str], &[&str]))> =
         gap_gram(g_s_bigram, 2, g_s_bigram).featurize(&vecdoc);
@@ -224,9 +224,9 @@ pub(crate) fn run_checks() {
             Push: FnMut(Self::TokenGroup) -> (),
         {
             if origin.len() < 6 {
-                slice_gram(2).push_tokens_from(origin, push);
+                n_slice(2).push_tokens_from(origin, push);
             } else {
-                slice_gram(4).push_tokens_from(origin, push);
+                n_slice(4).push_tokens_from(origin, push);
             }
         }
     }

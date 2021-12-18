@@ -1,4 +1,5 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::internal::impl_ftrzs_2;
 use crate::n_gram::NGram;
 use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
@@ -14,10 +15,10 @@ pub struct BookEnds<A, B> {
     back_size: usize,
 }
 
-pub fn bookends<A, B>(front: (usize, A), back: (B, usize)) -> BookEnds<A, B> {
+pub fn bookends<A, B>(front: (A, usize), back: (B, usize)) -> BookEnds<A, B> {
     BookEnds {
-        front: front.1,
-        front_size: front.0,
+        front: front.0,
+        front_size: front.1,
         back_size: back.1,
         back: back.0,
     }
@@ -40,6 +41,59 @@ where
         )
     }
 }
+/*
+impl<'a, TA: 'a, TB: 'a, A, B> IterFtzr<&'a str> for BookEnds<A, B>
+where
+    A: IterFtzr<&'a [u8], TokenGroup = TA>,
+    B: IterFtzr<&'a [u8], TokenGroup = TB>,
+{
+    type TokenGroup = FrontBack<TA, TB>;
+    type Iter = BookEndsIter<A::Iter, B::Iter>;
+
+    fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
+        self.extract_tokens(origin.as_bytes())
+    }
+}
+
+impl<'a, TA: 'a, TB: 'a, A, B> IterFtzr<&'a String> for BookEnds<A, B>
+where
+    A: IterFtzr<&'a [u8], TokenGroup = TA>,
+    B: IterFtzr<&'a [u8], TokenGroup = TB>,
+{
+    type TokenGroup = FrontBack<TA, TB>;
+    type Iter = BookEndsIter<A::Iter, B::Iter>;
+
+    fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
+        self.extract_tokens(origin.as_str())
+    }
+}
+
+impl<'a, T: 'a, TA: 'a, TB: 'a, A, B, const N: usize> IterFtzr<&'a [T; N]> for BookEnds<A, B>
+where
+    A: IterFtzr<&'a [T], TokenGroup = TA>,
+    B: IterFtzr<&'a [T], TokenGroup = TB>,
+{
+    type TokenGroup = FrontBack<TA, TB>;
+    type Iter = BookEndsIter<A::Iter, B::Iter>;
+
+    fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
+        self.extract_tokens(&origin[..])
+    }
+}
+
+impl<'a, T: 'a, TA: 'a, TB: 'a, A, B> IterFtzr<&'a Vec<T>> for BookEnds<A, B>
+where
+    A: IterFtzr<&'a [T], TokenGroup = TA>,
+    B: IterFtzr<&'a [T], TokenGroup = TB>,
+{
+    type TokenGroup = FrontBack<TA, TB>;
+    type Iter = BookEndsIter<A::Iter, B::Iter>;
+
+    fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
+        self.extract_tokens(origin.as_slice())
+    }
+}
+*/
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -87,6 +141,8 @@ where
     }
 }
 
+impl_ftrzs_2!(BookEnds<X,Y>);
+
 impl<A, B, Ax, Bx> TokenFrom<FrontBack<A, B>> for Result<Ax, Bx>
 where
     Ax: TokenFrom<A>,
@@ -99,12 +155,32 @@ where
         }
     }
 }
+/*
 
-///TODO: a user-implemented featurizer 'F' must impl  IterFtzr (not just Ftzr)
-/// in order for BookEnds<F,_> or BookEnds<_,F> to impl Ftzr
-/// ForEach and MultiFtzr do not have this limitation
-/// (but GapGram does)
-/// maybe use a macro similar to internal::impl_ftrzs ??
+TODO impl in terms of Ftzr, not IterFtzr
+
+impl<'a, T, A, B, TA, TB> Ftzr<&'a [T]> for BookEnds<A, B>
+where
+    A: Ftzr<&'a [T], TokenGroup = TA>,
+    B: Ftzr<&'a [T], TokenGroup = TB>,
+{
+    type TokenGroup = FrontBack<TA, TB>;
+    fn push_tokens<Push>(&self, origin: &'a [T], push: &mut Push)
+    where
+        Push: FnMut(Self::TokenGroup) -> (),
+    {
+        {
+            let mut _push = |t| push(FrontBack::Front(t));
+            self.front
+                .push_tokens(&origin[..self.front_size], &mut _push);
+        }
+        {
+            let mut _push = |t| push(FrontBack::Back(t));
+            self.back
+                .push_tokens(&origin[origin.len() - self.back_size..], &mut _push);
+        }
+    }
+} */
 
 impl<Origin, A, B> Ftzr<Origin> for BookEnds<A, B>
 where

@@ -11,8 +11,16 @@ pub struct SliceGram {
     n: usize,
 }
 
-pub fn slice_gram(n: usize) -> SliceGram {
+pub fn n_slice(n: usize) -> SliceGram {
     SliceGram { n }
+}
+
+pub fn bislice() -> SliceGram {
+    SliceGram { n: 2 }
+}
+
+pub fn trislice() -> SliceGram {
+    SliceGram { n: 3 }
 }
 
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]

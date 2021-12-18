@@ -1,10 +1,11 @@
 use crate::accum_ftzr::*;
 use crate::hashedfeature::*;
 use crate::n_gram::*;
-use crate::slice_gram::*;
+use crate::n_slice::*;
 use crate::tokengroup::chars_of;
+use senor_borroso;
+use senor_borroso::hasfeatures::HasFeatures;
 use std::time::Instant;
-
 pub(crate) fn bench() {
     let az = "abcdefghijklmnopqrstuvuxyz1$n34567890!@#$%^&*()";
     let mut bigstring = "".to_owned();
@@ -29,48 +30,65 @@ pub(crate) fn bench() {
             post / ((k / 10000) as u128)
         );
     }
+    let sb_ftzr = senor_borroso::ftzrs::n_gram;
     macro_rules! bench_n {
         ($n:expr) => {{
-            bench_single($n, &"slice_gram + Vec<&str> (from &str)", bigstring, |s| {
-                let v: Vec<&str> = slice_gram($n).featurize(s);
+            bench_single($n, &"n_slice + Vec<&str> (from &str)", bigstring, |s| {
+                let v: Vec<&str> = n_slice($n).featurize(s);
                 v.len()
             });
+
+            /*
             bench_single($n, &"n_gram + Vec<String> (from &str)", bigstring, |s| {
                 let v: Vec<String> = n_gram::<$n>().featurize(s);
                 v.len()
-            });
-            {
-                use ngrammatic::NgramBuilder;
-                bench_single(
-                    $n,
-                    &"OTHER CRATE C + HashMap<String, usize> (from Iterator of <u8>)",
-                    &bigstring,
-                    |s| {
-                        //let v: Vec<Vec<u8>> = s.bytes().ngrams($n).collect();
-                        let bag = NgramBuilder::new(s).arity($n).finish().grams;
-                        let mut n = 0;
-                        for (k, v) in bag.iter() {
-                            n += v;
-                        }
-                        n
-                    },
-                );
+            });*/
+
+            { /*
+                     use ngrammatic::NgramBuilder;
+                     bench_single(
+                         $n,
+                         &"OTHER CRATE C + HashMap<String, usize> (from Iterator of <u8>)",
+                         &bigstring,
+                         |s| {
+                             //let v: Vec<Vec<u8>> = s.bytes().ngrams($n).collect();
+                             let bag = NgramBuilder::new(s).arity($n).finish().grams;
+                             let mut n = 0;
+                             for (k, v) in bag.iter() {
+                                 n += v;
+                             }
+                             n
+                         },
+                     );
+                 */
             }
             bench_single(
                 $n,
-                &"slice_gram + Vec<Feature64> (from &str)",
+                &"n_slice + Vec<Feature64> (from &str)",
                 bigstring,
                 |s| {
-                    let v: Vec<Feature64> = slice_gram($n).featurize(s);
+                    let v: Vec<Feature64> = n_slice($n).featurize(s);
                     v.len()
                 },
             );
+
+            bench_single(
+                $n,
+                &"senor_borroso + Vec<Feature64> (from &str)",
+                bigstring,
+                |s| {
+                    let v: Vec<senor_borroso::ftzrs::Feature> =
+                        s.collect_features_with(&sb_ftzr($n));
+                    v.len()
+                },
+            );
+
             bench_single($n, &"n_gram + Vec<Feature64> (from &str)", bigstring, |s| {
                 let v: Vec<Feature64> = n_gram::<$n>().featurize(s);
                 v.len()
             });
-            bench_single($n, &"slice_gram + Vec<&[u8]> (from &str)", bigstring, |s| {
-                let v: Vec<&[u8]> = slice_gram($n).featurize(s);
+            bench_single($n, &"n_slice + Vec<&[u8]> (from &str)", bigstring, |s| {
+                let v: Vec<&[u8]> = n_slice($n).featurize(s);
                 v.len()
             });
             bench_single($n, &"n_gram + Vec<[u8;N]> (from &str)", bigstring, |s| {
@@ -78,6 +96,7 @@ pub(crate) fn bench() {
                 v.len()
             });
 
+            /*
             {
                 use ngram::NGram;
                 bench_single(
@@ -89,7 +108,7 @@ pub(crate) fn bench() {
                         v.len()
                     },
                 );
-            }
+            }*/
 
             let chars = chars_of(bigstring);
             {
@@ -104,6 +123,7 @@ pub(crate) fn bench() {
                     },
                 );
             }
+            /*
             {
                 use ngram::NGram;
                 bench_single(
@@ -115,7 +135,7 @@ pub(crate) fn bench() {
                         v.len()
                     },
                 );
-            }
+            }*/
 
             bench_single(
                 $n,
@@ -129,10 +149,10 @@ pub(crate) fn bench() {
 
             bench_single(
                 $n,
-                &"slice_gram + Vec<&[char]> (from Vec<char>)",
+                &"n_slice + Vec<&[char]> (from Vec<char>)",
                 &chars,
                 |s| {
-                    let v: Vec<&[char]> = slice_gram($n).featurize(s);
+                    let v: Vec<&[char]> = n_slice($n).featurize(s);
                     v.len()
                 },
             );
@@ -149,10 +169,31 @@ pub(crate) fn bench() {
 
             bench_single(
                 $n,
-                &"slice_gram + Vec<Feature64> (from Vec<char>)",
+                &"n_slice + Vec<Feature64> (from Vec<char>)",
                 &chars,
                 |s| {
-                    let v: Vec<Feature64> = slice_gram($n).featurize(s);
+                    let v: Vec<Feature64> = n_slice($n).featurize(s);
+                    v.len()
+                },
+            );
+
+            bench_single(
+                $n,
+                &"senor_borroso + Vec<Feature64> (from &[char])",
+                &chars,
+                |s| {
+                    let v: Vec<senor_borroso::ftzrs::Feature> =
+                        s.collect_features_with(&sb_ftzr($n));
+                    v.len()
+                },
+            );
+            bench_single(
+                $n,
+                &"senor_borroso (bookends) + Vec<Feature64> (from &[char])",
+                &chars,
+                |s| {
+                    let v: Vec<senor_borroso::ftzrs::Feature> =
+                        s.collect_features_with(&sb_ftzr($n));
                     v.len()
                 },
             );
