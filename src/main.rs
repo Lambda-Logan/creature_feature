@@ -64,9 +64,10 @@ macro_rules! assert_str_lengths {
 }
 
 fn main() {
-    //bench::bench();
-    //return ();
+    bench::bench();
+    return ();
     let abcde = "abcde";
+
     assert_str_lengths!(4, n_slice(2), abcde);
     assert_str_lengths!(4, n_slice(2), &abcde.to_string()); //needs & ???
     assert_str_lengths!(4, n_slice(2), &chars_of(abcde));

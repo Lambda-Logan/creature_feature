@@ -64,17 +64,17 @@ pub(crate) fn bench() {
             }
             bench_single(
                 $n,
-                &"n_slice + Vec<Feature64> (from &str)",
+                &"n_slice + Vec<HashedAs<u64>> (from &str)",
                 bigstring,
                 |s| {
-                    let v: Vec<Feature64> = n_slice($n).featurize(s);
+                    let v: Vec<HashedAs<u64>> = n_slice($n).featurize(s);
                     v.len()
                 },
             );
 
             bench_single(
                 $n,
-                &"senor_borroso + Vec<Feature64> (from &str)",
+                &"senor_borroso + Vec<HashedAs<u64>> (from &str)",
                 bigstring,
                 |s| {
                     let v: Vec<senor_borroso::ftzrs::Feature> =
@@ -83,10 +83,36 @@ pub(crate) fn bench() {
                 },
             );
 
-            bench_single($n, &"n_gram + Vec<Feature64> (from &str)", bigstring, |s| {
-                let v: Vec<Feature64> = n_gram::<$n>().featurize(s);
-                v.len()
-            });
+            bench_single(
+                $n,
+                &"n_gram + Vec<HashedAs<u64>> (from &str)",
+                bigstring,
+                |s| {
+                    let v: Vec<HashedAs<u64>> = n_gram::<$n>().featurize(s);
+                    v.len()
+                },
+            );
+
+            bench_single(
+                $n,
+                &"n_slice + Vec<HashedAs<u16>> (from &str)",
+                bigstring,
+                |s| {
+                    let v: Vec<HashedAs<u16>> = n_slice($n).featurize(s);
+                    v.len()
+                },
+            );
+
+            bench_single(
+                $n,
+                &"n_gram + Vec<HashedAs<u16>> (from &str)",
+                bigstring,
+                |s| {
+                    let v: Vec<HashedAs<u16>> = n_gram::<$n>().featurize(s);
+                    v.len()
+                },
+            );
+
             bench_single($n, &"n_slice + Vec<&[u8]> (from &str)", bigstring, |s| {
                 let v: Vec<&[u8]> = n_slice($n).featurize(s);
                 v.len()
@@ -111,6 +137,7 @@ pub(crate) fn bench() {
             }*/
 
             let chars = chars_of(bigstring);
+            /*
             {
                 use ngrams::Ngram;
                 bench_single(
@@ -123,7 +150,6 @@ pub(crate) fn bench() {
                     },
                 );
             }
-            /*
             {
                 use ngram::NGram;
                 bench_single(
@@ -159,27 +185,27 @@ pub(crate) fn bench() {
 
             bench_single(
                 $n,
-                &"n_gram + Vec<Feature64> (from Vec<char>)",
+                &"n_gram + Vec<HashedAs<u64>> (from Vec<char>)",
                 &chars,
                 |s| {
-                    let v: Vec<Feature64> = n_gram::<$n>().featurize(s);
+                    let v: Vec<HashedAs<u64>> = n_gram::<$n>().featurize(s);
                     v.len()
                 },
             );
 
             bench_single(
                 $n,
-                &"n_slice + Vec<Feature64> (from Vec<char>)",
+                &"n_slice + Vec<HashedAs<u64>> (from Vec<char>)",
                 &chars,
                 |s| {
-                    let v: Vec<Feature64> = n_slice($n).featurize(s);
+                    let v: Vec<HashedAs<u64>> = n_slice($n).featurize(s);
                     v.len()
                 },
             );
 
             bench_single(
                 $n,
-                &"senor_borroso + Vec<Feature64> (from &[char])",
+                &"senor_borroso + Vec<HashedAs<u64>> (from &[char])",
                 &chars,
                 |s| {
                     let v: Vec<senor_borroso::ftzrs::Feature> =
@@ -189,7 +215,7 @@ pub(crate) fn bench() {
             );
             bench_single(
                 $n,
-                &"senor_borroso (bookends) + Vec<Feature64> (from &[char])",
+                &"senor_borroso (bookends) + Vec<HashedAs<u64>> (from &[char])",
                 &chars,
                 |s| {
                     let v: Vec<senor_borroso::ftzrs::Feature> =

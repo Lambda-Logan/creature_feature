@@ -18,7 +18,7 @@ use crate::gap_gram::*;
 
 use crate::n_gram::*;
 
-use crate::hashedfeature::*;
+use crate::hashedfeature::HashedAs;
 
 use crate::bookends::*;
 
@@ -55,17 +55,17 @@ pub(crate) fn run_checks() {
     let g_s_bigram = gap_gram(bislice, 2, bislice);
     let sentence = "one fish two fish red rish blue fish";
     let ak_bigrams = &["ab", "bc", "cd", "de", "ef", "fg", "gh", "hi", "ij", "jk"];
-    let ak_bigrams_feat64 = &[
-        Feature64(7222436297203265833),
-        Feature64(488219265294888090),
-        Feature64(12200746307096061963),
-        Feature64(4415645335814054341),
-        Feature64(17790974485650316728),
-        Feature64(11004783825300746331),
-        Feature64(16845529860537917751),
-        Feature64(8876065120756845939),
-        Feature64(14716811155994017359),
-        Feature64(14633802556225993672),
+    let ak_bigrams_feat64: &[HashedAs<u64>] = &[
+        HashedAs(7222436297203265833),
+        HashedAs(488219265294888090),
+        HashedAs(12200746307096061963),
+        HashedAs(4415645335814054341),
+        HashedAs(17790974485650316728),
+        HashedAs(11004783825300746331),
+        HashedAs(16845529860537917751),
+        HashedAs(8876065120756845939),
+        HashedAs(14716811155994017359),
+        HashedAs(14633802556225993672),
     ];
     let bigrams_12_usize = &[
         [0, 1],
@@ -81,17 +81,17 @@ pub(crate) fn run_checks() {
         [10, 11],
     ];
     let bigrams_12_usize_feats64 = &[
-        Feature64(3351245001697020842),
-        Feature64(3476130915693767771),
-        Feature64(11967000998307149924),
-        Feature64(13702715391897792713),
-        Feature64(17297361034655441419),
-        Feature64(10615117631188256330),
-        Feature64(12402805653220091773),
-        Feature64(1615530608106378053),
-        Feature64(13391796650981597793),
-        Feature64(13464708936537152068),
-        Feature64(16031824384145339114),
+        HashedAs(3351245001697020842),
+        HashedAs(3476130915693767771),
+        HashedAs(11967000998307149924),
+        HashedAs(13702715391897792713),
+        HashedAs(17297361034655441419),
+        HashedAs(10615117631188256330),
+        HashedAs(12402805653220091773),
+        HashedAs(1615530608106378053),
+        HashedAs(13391796650981597793),
+        HashedAs(13464708936537152068),
+        HashedAs(16031824384145339114),
     ];
     let ak: &str = "abcdefghijk";
     let n_usize_12: &[usize; 12] = &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -101,16 +101,16 @@ pub(crate) fn run_checks() {
     {
         //        NGram<2>
         test_vec_feats!(bigram.featurize(ak), String, ak_bigrams);
-        test_vec_feats!(bigram.featurize(ak), Feature64, ak_bigrams_feat64);
+        test_vec_feats!(bigram.featurize(ak), HashedAs<u64>, ak_bigrams_feat64);
 
         //        SliceGram
         test_vec_feats!(bislice.featurize(ak), &str, ak_bigrams); // NOTICE &str
-        test_vec_feats!(bislice.featurize(ak), Feature64, ak_bigrams_feat64);
+        test_vec_feats!(bislice.featurize(ak), HashedAs<u64>, ak_bigrams_feat64);
 
         //        GapGram
         let _feats: Vec<(String, String)> = gap_gram(bigram, 2, bigram).featurize(ak);
         let _feats: Vec<(&str, &str)> = gap_gram(bislice, 2, bislice).featurize(ak);
-        let _feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(ak);
+        let _feats: Vec<(HashedAs<u64>, HashedAs<u64>)> = g_g_bigram.featurize(ak);
     }
 
     ////////////////////////////
@@ -121,16 +121,16 @@ pub(crate) fn run_checks() {
         let t: &String = &ak.to_owned();
         //        NGram<2>
         test_vec_feats!(bigram.featurize(ak), String, ak_bigrams);
-        test_vec_feats!(bigram.featurize(ak), Feature64, ak_bigrams_feat64);
+        test_vec_feats!(bigram.featurize(ak), HashedAs<u64>, ak_bigrams_feat64);
 
         //        SliceGram
         test_vec_feats!(bislice.featurize(ak), &str, ak_bigrams);
-        test_vec_feats!(bislice.featurize(ak), Feature64, ak_bigrams_feat64);
+        test_vec_feats!(bislice.featurize(ak), HashedAs<u64>, ak_bigrams_feat64);
 
         //        GapGram
         let _feats: Vec<(String, String)> = gap_gram(bigram, 2, bigram).featurize(t);
         let _feats: Vec<(&str, &str)> = gap_gram(bislice, 2, bislice).featurize(t);
-        let _feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(t);
+        let _feats: Vec<(HashedAs<u64>, HashedAs<u64>)> = g_g_bigram.featurize(t);
     }
 
     ////////////////////////////
@@ -150,7 +150,7 @@ pub(crate) fn run_checks() {
         );
         test_vec_feats!(
             bigram.featurize(&n_usize_12[..]),
-            Feature64,
+            HashedAs<u64>,
             bigrams_12_usize_feats64
         );
 
@@ -164,7 +164,7 @@ pub(crate) fn run_checks() {
                                                                         // NOTICE ... no Vec<usize>
         test_vec_feats!(
             bislice.featurize(&n_usize_12[..]),
-            Feature64,
+            HashedAs<u64>,
             bigrams_12_usize_feats64
         );
 
@@ -173,9 +173,9 @@ pub(crate) fn run_checks() {
             gap_gram(bigram, 2, bigram).featurize(&n_usize_12[..]);
         let _feats: Vec<(&[usize], &[usize])> =
             gap_gram(bislice, 2, bislice).featurize(&n_usize_12[..]);
-        let _feats: Vec<(Feature64, Feature64)> = g_g_bigram.featurize(&n_usize_12[..]);
+        let _feats: Vec<(HashedAs<u64>, HashedAs<u64>)> = g_g_bigram.featurize(&n_usize_12[..]);
     }
-    let _feats: Vec<Result<Vec<usize>, Feature64>> =
+    let _feats: Vec<Result<Vec<usize>, HashedAs<u64>>> =
         bookends((bigram, 4), (bigram, 4)).featurize(n_usize_12);
     let _feats: Vec<Token<Vec<usize>>> = //TODO is this ok????
         bookends((bigram, 4), (bigram, 4)).featurize(n_usize_12);
@@ -183,12 +183,12 @@ pub(crate) fn run_checks() {
 
     let _feats: Vec<Token<String>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
 
-    let _feats: Vec<Token<Feature64>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
+    let _feats: Vec<Token<HashedAs<u64>>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
     //let _feats: Vec<EitherGroup<_, _>> = MultiFtzr(bigram, n_gram::<3>()).featurize(ak);
 
     //TODO
-    //let _feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(n_usize_12);
-    let _feats: Vec<Feature64> = gap_gram(bislice, 4, bigram).featurize(&n_usize_12[..]);
+    //let _feats: Vec<HashedAs> = gap_gram(bislice, 4, bigram).featurize(n_usize_12);
+    let _feats: Vec<HashedAs<u64>> = gap_gram(bislice, 4, bigram).featurize(&n_usize_12[..]);
     use std::collections::LinkedList;
     //TODO Linked list & friends
     //let _feats: LinkedList<(&str, String)> = gap_gram(bislice, 4, n_gram::<3>()).featurize(ak);
@@ -205,7 +205,7 @@ pub(crate) fn run_checks() {
     let doc_iter = doc.lines().map(|line| line.split_ascii_whitespace());
 
     //TODO
-    //let _feats: Vec<Token<Feature64>> =
+    //let _feats: Vec<Token<HashedAs>> =
     //    for_each(for_each(bislice.and_then(n_slice(3)))).featurize(doc_iter);
     //let _feats: Vec<Token<String>> = n_gram::<2>().and_then(n_gram::<3>()).featurize(doc);
     let _feats: Vec<Token<String>> = featurizers!(bigram, n_gram::<3>()).featurize(doc);
@@ -242,6 +242,6 @@ pub(crate) fn run_checks() {
         gap_gram(every_other, 1, every_other).featurize(&nums);
     let _feats: Vec<([[i32; 1]; 4])> = gap_gram(every_other, 1, every_other).featurize(&nums);
 
-    let _feats: (HashSet<Feature64>, Vec<&str>) = bislice.featurize_x2(ak);
+    let _feats: (HashSet<HashedAs<u64>>, Vec<&str>) = bislice.featurize_x2(ak);
     println!("{:?}", _feats);
 }

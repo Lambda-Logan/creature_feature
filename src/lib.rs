@@ -4,7 +4,7 @@
     trivial_casts,
     missing_debug_implementations,
     missing_copy_implementations,
-    trivial_numeric_casts,
+    //trivial_numeric_casts,
     unused_import_braces,
     unused_qualifications
     //missing_docs
@@ -23,7 +23,7 @@ pub mod utils {
 }
 
 mod hashedfeature;
-pub use hashedfeature::{Feature64, HashedFeature};
+pub use hashedfeature::HashedAs;
 
 mod accum_ftzr;
 mod bookends;
@@ -40,8 +40,7 @@ pub mod traits {
 
 pub mod ftzrs {
     /// look for doc comments '///'
-    //TODO export Multi with featurizers.
-    //TODO change featurizers to []
+    /// TODO size hints for pre-allocation
     //&String not implemented
     /*
             let ftzr = featurizers!(
