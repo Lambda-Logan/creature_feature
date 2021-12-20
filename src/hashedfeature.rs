@@ -1,5 +1,5 @@
+use crate::feature_from::FeatureFrom;
 use crate::gap_gram::GapPair;
-use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 use fxhash::FxHasher64;
 #[cfg(feature = "serde")]
@@ -30,7 +30,7 @@ macro_rules! impl_hashed {
                 HashedAs(h.finish() as $u_type)
             }
         }
-        impl<T: Hash> TokenFrom<T> for HashedAs<$u_type> {
+        impl<T: Hash> FeatureFrom<T> for HashedAs<$u_type> {
             fn from(token_group: T) -> Self {
                 let mut h = FxHasher64::default();
                 token_group.hash(&mut h);

@@ -1,5 +1,5 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
-use crate::token_from::TokenFrom;
+use crate::feature_from::FeatureFrom;
 use crate::tokengroup::Token;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -31,11 +31,11 @@ where
     type TokenGroup = EitherGroup<TA, TB>;
     type Iter = MultiFtzrIter<A::Iter, B::Iter>;
 
-    fn extract_tokens(&self, origin: &'a Origin) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a Origin) -> Self::Iter {
         MultiFtzrIter(
             true,
-            self.0.extract_tokens(&origin),
-            self.1.extract_tokens(&origin),
+            self.0.iterate_features(&origin),
+            self.1.iterate_features(&origin),
         )
     }
 }
@@ -116,15 +116,15 @@ where
     }
 }
 
-impl<A, B, X> TokenFrom<EitherGroup<A, B>> for Token<X>
+impl<A, B, X> FeatureFrom<EitherGroup<A, B>> for Token<X>
 where
-    X: TokenFrom<A> + TokenFrom<B>,
+    X: FeatureFrom<A> + FeatureFrom<B>,
 {
     fn from(x: EitherGroup<A, B>) -> Self {
         Token({
             match x {
-                EitherGroup::Left(a) => TokenFrom::from(a),
-                EitherGroup::Right(a) => TokenFrom::from(a),
+                EitherGroup::Left(a) => FeatureFrom::from(a),
+                EitherGroup::Right(a) => FeatureFrom::from(a),
             }
         })
     }

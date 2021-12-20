@@ -1,6 +1,6 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
+use crate::feature_from::FeatureFrom;
 use crate::internal::impl_ftrzs;
-use crate::token_from::TokenFrom;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -13,49 +13,49 @@ pub struct Whole;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct WholeAtom<T>(pub T);
 
-impl<'a, T> TokenFrom<WholeAtom<T>> for &'a str
+impl<'a, T> FeatureFrom<WholeAtom<T>> for &'a str
 where
-    &'a str: TokenFrom<T>,
+    &'a str: FeatureFrom<T>,
 {
     fn from(t: WholeAtom<T>) -> &'a str {
-        TokenFrom::from(t.0)
+        FeatureFrom::from(t.0)
     }
 }
-impl<'a, T, U> TokenFrom<WholeAtom<T>> for &'a [U]
+impl<'a, T, U> FeatureFrom<WholeAtom<T>> for &'a [U]
 where
-    &'a [U]: TokenFrom<T>,
+    &'a [U]: FeatureFrom<T>,
 {
     fn from(t: WholeAtom<T>) -> &'a [U] {
-        TokenFrom::from(t.0)
+        FeatureFrom::from(t.0)
     }
 }
-impl<'a, T, U, const N: usize> TokenFrom<WholeAtom<T>> for &'a [U; N]
+impl<'a, T, U, const N: usize> FeatureFrom<WholeAtom<T>> for &'a [U; N]
 where
-    &'a [U; N]: TokenFrom<T>,
+    &'a [U; N]: FeatureFrom<T>,
 {
     fn from(t: WholeAtom<T>) -> &'a [U; N] {
-        TokenFrom::from(t.0)
+        FeatureFrom::from(t.0)
     }
 }
-impl<T, U, const N: usize> TokenFrom<WholeAtom<T>> for [U; N]
+impl<T, U, const N: usize> FeatureFrom<WholeAtom<T>> for [U; N]
 where
-    [U; N]: TokenFrom<T>,
+    [U; N]: FeatureFrom<T>,
 {
     fn from(t: WholeAtom<T>) -> [U; N] {
-        TokenFrom::from(t.0)
+        FeatureFrom::from(t.0)
     }
 }
 
-impl<T> TokenFrom<WholeAtom<T>> for String
+impl<T> FeatureFrom<WholeAtom<T>> for String
 where
-    String: TokenFrom<T>,
+    String: FeatureFrom<T>,
 {
     fn from(t: WholeAtom<T>) -> String {
-        TokenFrom::from(t.0)
+        FeatureFrom::from(t.0)
     }
 }
 
-impl<T, Q: IntoIterator<Item = T>> TokenFrom<WholeAtom<Q>> for Vec<T> {
+impl<T, Q: IntoIterator<Item = T>> FeatureFrom<WholeAtom<Q>> for Vec<T> {
     fn from(t: WholeAtom<Q>) -> Vec<T> {
         Iterator::collect(t.0.into_iter())
     }
@@ -64,7 +64,7 @@ impl<T, Q: IntoIterator<Item = T>> TokenFrom<WholeAtom<Q>> for Vec<T> {
 impl<'a, T> IterFtzr<&'a [T]> for Whole {
     type TokenGroup = WholeAtom<&'a [T]>;
     type Iter = std::option::IntoIter<Self::TokenGroup>;
-    fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T]) -> Self::Iter {
         Some(WholeAtom(origin)).into_iter()
     }
 }
@@ -78,7 +78,7 @@ pub struct Empty;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct EmptyAtom;
 
-impl<D: Default> TokenFrom<EmptyAtom> for D {
+impl<D: Default> FeatureFrom<EmptyAtom> for D {
     fn from(x: EmptyAtom) -> D {
         Default::default()
     }
@@ -93,7 +93,7 @@ impl LinearFixed for Empty {
 impl<'a, T> IterFtzr<&'a [T]> for Empty {
     type TokenGroup = EmptyAtom;
     type Iter = std::option::IntoIter<Self::TokenGroup>;
-    fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T]) -> Self::Iter {
         None.into_iter()
     }
 }

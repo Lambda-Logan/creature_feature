@@ -49,7 +49,7 @@ where
 {
     type TokenGroup = F::TokenGroup;
     type Iter = ForEachIter<F, Sentence, Word, Sentence::IntoIter, F::Iter>;
-    fn extract_tokens(&self, origin: Sentence) -> Self::Iter {
+    fn iterate_features(&self, origin: Sentence) -> Self::Iter {
         unimplemented!("ForEach does not yet impl IterFtzr... Feel free to file a PR")
     }
 }

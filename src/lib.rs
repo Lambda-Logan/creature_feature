@@ -13,9 +13,9 @@
 
 mod internal;
 
-mod token_from;
-//use token_from::TokenFrom;
-
+mod feature_from;
+//use feature_from::FeatureFrom;
+mod skip_schema;
 mod tokengroup;
 
 pub mod utils {
@@ -27,6 +27,7 @@ pub use hashedfeature::HashedAs;
 
 mod accum_ftzr;
 mod bookends;
+mod for_each;
 mod gap_gram;
 mod multiftzr;
 mod n_gram;
@@ -35,13 +36,12 @@ mod whole_empty;
 
 pub mod traits {
     pub use super::accum_ftzr::{Accumulates, Ftzr, IterFtzr, LinearFixed};
-    pub use super::token_from::TokenFrom;
+    pub use super::feature_from::FeatureFrom;
 }
 
 pub mod ftzrs {
     /// look for doc comments '///'
     /// TODO size hints for pre-allocation
-    //&String not implemented
     /*
             let ftzr = featurizers!(
             n_gram::<2>(),
@@ -66,12 +66,13 @@ pub mod ftzrs {
     pub use super::bookends::bookends;
     pub use super::gap_gram::gap_gram;
     //pub use super::multiftzr::featurizers;
-
+    pub use super::for_each::for_each;
     pub use super::n_gram::{bigram, n_gram, trigram};
     pub use super::n_slice::{bislice, n_slice, trislice};
     pub use super::whole_empty::{empty, whole};
     pub mod utils {
         pub use super::super::bookends::{BookEnds, BookEndsIter};
+        pub use super::super::for_each::ForEach;
         pub use super::super::gap_gram::{GapGram, GapGramIter, GapPair};
         pub use super::super::multiftzr::{EitherGroup, MultiFtzr, MultiFtzrIter};
         pub use super::super::n_gram::{NGram, NGramIter};

@@ -1,4 +1,4 @@
-use crate::token_from::TokenFrom;
+use crate::feature_from::FeatureFrom;
 use std::ops::Deref;
 
 #[macro_use]
@@ -11,8 +11,8 @@ macro_rules! impl_ftrzs {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
-                self.extract_tokens(origin.as_slice())
+            fn iterate_features(&self, origin: &'a Vec<T>) -> Self::Iter {
+                self.iterate_features(origin.as_slice())
             }
         }
         impl<'a, T, const N: usize> IterFtzr<&'a [T; N]> for $self
@@ -22,8 +22,8 @@ macro_rules! impl_ftrzs {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
-                self.extract_tokens(&origin[..])
+            fn iterate_features(&self, origin: &'a [T; N]) -> Self::Iter {
+                self.iterate_features(&origin[..])
             }
         }
         impl<'a> IterFtzr<&'a str> for $self
@@ -33,8 +33,8 @@ macro_rules! impl_ftrzs {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
-                self.extract_tokens(origin.as_bytes())
+            fn iterate_features(&self, origin: &'a str) -> Self::Iter {
+                self.iterate_features(origin.as_bytes())
             }
         }
 
@@ -45,8 +45,8 @@ macro_rules! impl_ftrzs {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
-                self.extract_tokens(origin.as_str().as_bytes())
+            fn iterate_features(&self, origin: &'a String) -> Self::Iter {
+                self.iterate_features(origin.as_str().as_bytes())
             }
         }
 
@@ -59,7 +59,7 @@ macro_rules! impl_ftrzs {
             where
                 Push: FnMut(Self::TokenGroup) -> (),
             {
-                for t in self.extract_tokens(origin) {
+                for t in self.iterate_features(origin) {
                     push(t)
                 }
             }
@@ -77,8 +77,8 @@ macro_rules! impl_ftrzs_2 {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
-                self.extract_tokens(origin.as_slice())
+            fn iterate_features(&self, origin: &'a Vec<T>) -> Self::Iter {
+                self.iterate_features(origin.as_slice())
             }
         }
         impl<'a, T, Y, X, const N: usize> IterFtzr<&'a [T; N]> for $self
@@ -88,8 +88,8 @@ macro_rules! impl_ftrzs_2 {
             type TokenGroup = <Self as IterFtzr<&'a [T]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [T]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
-                self.extract_tokens(&origin[..])
+            fn iterate_features(&self, origin: &'a [T; N]) -> Self::Iter {
+                self.iterate_features(&origin[..])
             }
         }
         impl<'a, Y, X> IterFtzr<&'a str> for $self
@@ -99,8 +99,8 @@ macro_rules! impl_ftrzs_2 {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
-                self.extract_tokens(origin.as_bytes())
+            fn iterate_features(&self, origin: &'a str) -> Self::Iter {
+                self.iterate_features(origin.as_bytes())
             }
         }
 
@@ -111,8 +111,8 @@ macro_rules! impl_ftrzs_2 {
             type TokenGroup = <Self as IterFtzr<&'a [u8]>>::TokenGroup;
             type Iter = <Self as IterFtzr<&'a [u8]>>::Iter;
 
-            fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
-                self.extract_tokens(origin.as_str().as_bytes())
+            fn iterate_features(&self, origin: &'a String) -> Self::Iter {
+                self.iterate_features(origin.as_str().as_bytes())
             }
         }
         /////////////////////////////////////////////////////

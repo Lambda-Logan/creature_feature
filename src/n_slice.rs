@@ -56,7 +56,7 @@ where
     fn chunk_size(&self) -> usize {
         self.n
     }
-    fn extract_tokens(&self, origin: Origin) -> Self::Iter {
+    fn iterate_features(&self, origin: Origin) -> Self::Iter {
         SliceGramIter {
             n: self.n,
             idx: 0,
@@ -73,7 +73,7 @@ macro_rules! impl_slice_gram {
             fn chunk_size(&self) -> usize {
                 self.n
             }
-            fn extract_tokens(&self, origin: &'a $t) -> Self::Iter {
+            fn iterate_features(&self, origin: &'a $t) -> Self::Iter {
                 SliceGramIter {
                     n: self.n,
                     idx: 0,
@@ -92,7 +92,7 @@ impl<'a, T> IterFtzr<&'a [T]> for SliceGram {
     type TokenGroup = &'a [T];
     type Iter = SliceGramIter<&'a [T]>;
 
-    fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T]) -> Self::Iter {
         SliceGramIter {
             n: self.n,
             idx: 0,
@@ -110,7 +110,7 @@ impl<'a, T> IterFtzr<&'a Vec<T>> for SliceGram {
     fn chunk_size(&self) -> usize {
         self.n
     }
-    fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a Vec<T>) -> Self::Iter {
         SliceGramIter {
             n: self.n,
             idx: 0,
@@ -125,7 +125,7 @@ impl<'a> IterFtzr<&'a str> for SliceGram {
     fn chunk_size(&self) -> usize {
         self.n
     }
-    fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a str) -> Self::Iter {
         SliceGramIter {
             n: self.n,
             idx: 0,
@@ -140,7 +140,7 @@ impl<'a, T, const N: usize> IterFtzr<&'a [T; N]> for SliceGram {
     fn chunk_size(&self) -> usize {
         self.n
     }
-    fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T; N]) -> Self::Iter {
         SliceGramIter {
             n: self.n,
             idx: 0,

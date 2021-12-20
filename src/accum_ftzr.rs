@@ -1,74 +1,221 @@
+use crate::feature_from::FeatureFrom;
 use crate::multiftzr::MultiFtzr;
-use crate::token_from::TokenFrom;
-use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
+use std::collections::{
+    BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, LinkedList, VecDeque,
+};
 use std::hash::{BuildHasher, Hash};
 use std::ops::AddAssign;
 use std::rc::Rc;
 use std::sync::Arc;
 
-pub trait IterFtzr<Origin> {
+/// A featurizer that can iterate over the original data.
+/// This is implemented for all featurizers in creature_feature for all of the following: `IterFtzr<&str>`,`IterFtzr<&String>`, `IterFtzr<&[T]>`,`IterFtzr<&Vec<T>>`,`IterFtzr<&[T; N]>`,
+///
+/// # Examples
+/// ```
+///use creature_feature::ftzrs::bigram;
+///use creature_feature::traits::*;
+///
+///let data = &[1, 2, 3, 4, 5];
+///
+///for bg in bigram().iterate_features(data) {
+///    println!("{:?}", bg)
+///}
+/// //[1, 2]
+/// //[2, 3]
+/// //[3, 4]
+/// //[4, 5]
+/// ```
+///
+/// Given an instance of `IterFtzr<InputData>`, it is very easy to implement the more general `Ftzr<InputData>`
+/// ```
+///use creature_feature::traits::IterFtzr;
+///struct MyIterFtzr;
+///
+///impl<InputData> Ftzr<InputData> for MyIterFtzr
+///where
+///    MyIterFtzr: IterFtzr<InputData>,
+///{
+///    type TokenGroup = <Self as IterFtzr<InputData>>::TokenGroup;
+///    fn push_tokens<Push>(&self, input: InputData, push: &mut Push)
+///    where
+///        Push: FnMut(Self::TokenGroup) -> (),
+///    {
+///        for t in self.iterate_features(input) {
+///            push(t)
+///        }
+///    }
+///}
+/// ```
+pub trait IterFtzr<InputData> {
     type TokenGroup;
     type Iter: Iterator<Item = Self::TokenGroup>;
-    fn extract_tokens(&self, origin: Origin) -> Self::Iter;
+    fn iterate_features(&self, input: InputData) -> Self::Iter;
 }
 
-pub trait LinearFixed {
-    fn chunk_size(&self) -> usize;
-}
-
-pub trait Ftzr<Origin> {
+/// A highly polymorphic featurizer that's defined by it's ability to visit each group of tokens in the input data.
+///
+/// Even with some boilerplate, implementing a custom featurizer by visitation can be much simpler that by iteration.
+/// # Example of a length-based featurizer
+/// ```
+///use creature_feature::ftzrs::{for_each, n_slice};
+///use creature_feature::traits::Ftzr;
+///
+///struct MyLengthBasedFtzr;
+///
+///impl<'a> Ftzr<&'a str> for MyLengthBasedFtzr {
+///
+///    type TokenGroup = &'a [u8];
+///
+///    fn push_tokens<Push: FnMut(Self::TokenGroup)>(&self, input: &'a str, push_token_group: &mut Push)
+///    {
+///        if input.len() <= 2 {
+///            push_token_group(input.as_bytes());
+///        }
+///        if input.len() > 2 {
+///            n_slice(3).push_tokens(input, push_token_group);
+///        }
+///    }
+///}
+///let sentence = "It is a truth universally acknowledged \
+///    that Jane Austin must be used in nlp examples"
+///    .split_ascii_whitespace();
+///    
+///let feats: Vec<&str> = for_each(MyLengthBasedFtzr).featurize(sentence);
+///println!("{:?}", feats);
+///
+/// //>>> ["it", "is", "a", "tru", "rut", "uth", "uni", "niv", "ive", "ver", "ers", "rsa", "sal", "all", "lly", ... "use", "sed", "in", "nlp"]
+///```
+pub trait Ftzr<InputData> {
     type TokenGroup;
 
-    fn push_tokens<Push>(&self, origin: Origin, push: &mut Push)
-    where
-        Push: FnMut(Self::TokenGroup) -> ();
+    ///The main method to implement for the `Ftzr<InputData>` trait. Each group of tokens is visited by the `FnMut(Self::TokenGroup)` function.
+    ///
+    /// # Example
+    ///```
+    ///use creature_feature::ftzrs::trigram;
+    ///use creature_feature::traits::*;
+    ///
+    ///let mut print_triplet = |x: [isize; 3]| println!("{:?}", x);
+    ///
+    ///let data = &[0, 2, 4, 6, 8];
+    ///
+    ///trigram().push_tokens(data, &mut print_triplet);
+    /// // [0, 2, 4]
+    /// // [2, 4, 6]
+    /// // [4, 6, 8]
+    /// ```
+    fn push_tokens<Push: FnMut(Self::TokenGroup)>(&self, input: InputData, push: &mut Push);
 
-    ////////////////////////////////////////////////////////////////////////////
-    fn featurize<Feature: TokenFrom<Self::TokenGroup>, A: Accumulates<Feature>>(
-        &self,
-        origin: Origin,
-    ) -> A {
+    ///Identical to `push_tokens`, except with implicit coercion via `FeatureFrom<Self::TokenGroup>`
+    ///
+    /// # Example
+    ///
+    ///```rust
+    ///use creature_feature::ftzrs::n_slice;
+    ///use creature_feature::traits::*;
+    ///use creature_feature::HashedAs;
+    ///
+    ///let sentence = "It is a truth universally acknowledged \
+    ///    that Jane Austin must be used in nlp examples";
+    ///
+    ///let mut print_str = |s: &str| println!("{:?}", s);
+    ///let mut print_hashed = |s: HashedAs<u32>| println!("{:?}", s);
+    ///
+    ///  //-----------&str: FeatureFrom<&[u8]>-------------//
+    ///n_slice(50).push_tokens_from(sentence, &mut print_str);
+    /// //>>>"It is a truth universally acknowledged that Jane A"
+    /// //>>>"t is a truth universally acknowledged that Jane Au"
+    ///
+    /// //-----------HashedAs<u32>: FeatureFrom<&[u8]>----//
+    ///n_slice(50).push_tokens_from(sentence, &mut print_hashed);
+    /// //>>>HashedAs(3003844930)
+    /// //>>>HashedAs(3843215312)
+    /// //>>>HashedAs(4188097127)
+    ///```
+    ///
+    ///
+    fn push_tokens_from<Push, T>(&self, input: InputData, push: &mut Push)
+    where
+        Push: FnMut(T),
+        T: FeatureFrom<Self::TokenGroup>,
+    {
+        let mut _push = |t| push(FeatureFrom::from(t));
+        self.push_tokens(input, &mut _push)
+    }
+
+    /// The most versatile tool in the entire crate.
+    /// # A Smattering of Ftzr::featurize
+    /// ```
+    ///use creature_feature::ftzrs::{bigram, bislice, for_each};
+    ///use std::collections::{HashMap, HashSet};
+    ///
+    ///let int_data = &[1, 2, 3, 4, 5];
+    ///let str_data = "one fish two fish red fish blue fish";
+    ///
+    ///let owned_feats: Vec<String> = bigram().featurize(str_data);
+    ///let owned_feats: HashSet<Vec<usize>> = bigram().featurize(int_data);
+    ///let owned_bag: HashSet<Vec<usize>> = bigram().featurize(int_data);
+    ///
+    ///let ref_feats: Vec<&str> = bislice().featurize(str_data);
+    ///let ref_bag: HashMap<&[usize], u8> = bislice().featurize(int_data);
+    ///let ref_bag: HashMap<&str, i16> = for_each(bislice()).featurize(str_data.split_ascii_whitespace());
+    ///
+    /// // and many, MANY more posibilities
+    /// ```
+    fn featurize<Feature, A>(&self, input: InputData) -> A
+    where
+        Feature: FeatureFrom<Self::TokenGroup>,
+        A: Accumulates<Feature>,
+    {
         let mut state: A::State = Default::default();
         {
-            let mut push = |t: Self::TokenGroup| A::accum_token(&mut state, TokenFrom::from(t));
-            self.push_tokens(origin, &mut push);
+            let mut push = |t: Self::TokenGroup| A::accum_token(&mut state, FeatureFrom::from(t));
+            self.push_tokens(input, &mut push);
         }
-        //Self::TokenGroup: TokenFrom<Self::TokenGroup>
+        //Self::TokenGroup: FeatureFrom<Self::TokenGroup>
         A::finish(state)
     }
 
-    fn featurize_x2<A1, T1, A2, T2>(&self, origin: Origin) -> (A1, A2)
+    ///Identical to `featurize`, but produces two outputs while still only featurizing the input once. Pretty cool!
+    /// # Example
+    /// ```
+    ///use creature_feature::ftzrs::{gap_gram, trislice};
+    ///use creature_feature::traits::Ftzr;
+    ///use creature_feature::HashedAs;
+    ///use std::collections::{HashSet, LinkedList};
+    ///
+    ///let ftzr = gap_gram(trislice(), 1, trislice());
+    ///
+    ///let data = "0123456789";
+    ///
+    ///let (set, list): (HashSet<&str>, LinkedList<HashedAs<u64>>) = ftzr.featurize_x2(data);
+    /// ```
+    fn featurize_x2<A1, T1, A2, T2>(&self, input: InputData) -> (A1, A2)
     where
         Self::TokenGroup: Clone,
         A1: Accumulates<T1>,
         A2: Accumulates<T2>,
-        T1: TokenFrom<Self::TokenGroup>,
-        T2: TokenFrom<Self::TokenGroup>,
+        T1: FeatureFrom<Self::TokenGroup>,
+        T2: FeatureFrom<Self::TokenGroup>,
     {
         let mut state1: A1::State = Default::default();
         let mut state2: A2::State = Default::default();
         {
             let mut push = |t: Self::TokenGroup| {
-                A1::accum_token(&mut state1, TokenFrom::from(t.clone()));
-                A2::accum_token(&mut state2, TokenFrom::from(t));
+                A1::accum_token(&mut state1, FeatureFrom::from(t.clone()));
+                A2::accum_token(&mut state2, FeatureFrom::from(t));
             };
 
-            self.push_tokens(origin, &mut push);
+            self.push_tokens(input, &mut push);
         }
-        //Self::TokenGroup: TokenFrom<Self::TokenGroup>
+        //Self::TokenGroup: FeatureFrom<Self::TokenGroup>
         (A1::finish(state1), A2::finish(state2))
     }
 
-    fn push_tokens_from<Push, T>(&self, origin: Origin, push: &mut Push)
-    where
-        Push: FnMut(T) -> (),
-        T: TokenFrom<Self::TokenGroup>,
-    {
-        let mut _push = |t| push(TokenFrom::from(t));
-        self.push_tokens(origin, &mut _push)
-    }
-
-    fn as_fn<X: TokenFrom<Self::TokenGroup>>(self) -> Arc<dyn Fn(Origin) -> Vec<X> + Send + Sync>
+    fn as_fn<X: FeatureFrom<Self::TokenGroup>>(
+        self,
+    ) -> Arc<dyn Fn(InputData) -> Vec<X> + Send + Sync>
     where
         Self: Sized + Send + Sync + 'static,
     {
@@ -76,7 +223,7 @@ pub trait Ftzr<Origin> {
     }
 
     /*
-    fn and_then<T: Ftzr<Origin>>(self, ftzr: T) -> MultiFtzr<Self, T>
+    fn and_then<T: Ftzr<InputData>>(self, ftzr: T) -> MultiFtzr<Self, T>
     where
         Self: Sized,
     {
@@ -88,6 +235,16 @@ pub trait Ftzr<Origin> {
     //}
 }
 
+/// A trait for featurizers that process their input from left-to-right, exactly once and with a constant size.
+/// Examples include `NGram<N>`, `SliceGram` and `GapGram<A,B>`
+pub trait LinearFixed {
+    // this must be equal to the 'n' of an n-gram, or the total stretch of a GapGram (including both groups and the space between).
+    fn chunk_size(&self) -> usize;
+}
+
+/// A trait (inspired by `std::hash::Hasher`) that is the featurizer equivalent of `FromIterator`, with two key differences:
+///  - Something that `Accumulates<Token>` can be built by either iterating tokens, OR visiting tokens.
+///  - The FromIterator instance of `HashMap` does not create a true bag (or multiset)
 pub trait Accumulates<Token> {
     type State: Default;
     fn accum_token(state: &mut Self::State, token: Token);
@@ -122,6 +279,16 @@ impl<Token> Accumulates<Token> for Vec<Token> {
     type State = Self;
     fn accum_token(state: &mut Self, token: Token) {
         state.push(token);
+    }
+    fn finish(state: Self) -> Self {
+        state
+    }
+}
+
+impl<Token> Accumulates<Token> for LinkedList<Token> {
+    type State = Self;
+    fn accum_token(state: &mut Self, token: Token) {
+        state.push_back(token);
     }
     fn finish(state: Self) -> Self {
         state
@@ -247,12 +414,12 @@ where
 {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: TokenFrom<Token>,
+        Feature: FeatureFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
         let mut bag: Self = Default::default();
         for t in iter {
-            let f: Feature = TokenFrom::from(t);
+            let f: Feature = FeatureFrom::from(t);
             *bag.entry(f).or_default() += From::from(1);
         }
         bag
@@ -266,10 +433,10 @@ where
 {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: TokenFrom<Token>,
+        Feature: FeatureFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
-        Iterator::collect(iter.into_iter().map(TokenFrom::from))
+        Iterator::collect(iter.into_iter().map(FeatureFrom::from))
     }
 }
 
@@ -277,20 +444,20 @@ where
 impl<Feature: Ord> Accumulates<Feature> for BTreeSet<Feature> {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: TokenFrom<Token>,
+        Feature: FeatureFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
-        Iterator::collect(iter.into_iter().map(TokenFrom::from))
+        Iterator::collect(iter.into_iter().map(FeatureFrom::from))
     }
 }
 
 impl<Feature: Ord> Accumulates<Feature> for BinaryHeap<Feature> {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: TokenFrom<Token>,
+        Feature: FeatureFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
-        Iterator::collect(iter.into_iter().map(TokenFrom::from))
+        Iterator::collect(iter.into_iter().map(FeatureFrom::from))
     }
 }
 
@@ -301,12 +468,12 @@ where
 {
     fn accum<Token, Iter>(iter: Iter) -> Self
     where
-        Feature: TokenFrom<Token>,
+        Feature: FeatureFrom<Token>,
         Iter: Iterator<Item = Token>,
     {
         let mut bag: Self = Default::default();
         for t in iter {
-            let f: Feature = TokenFrom::from(t);
+            let f: Feature = FeatureFrom::from(t);
             *bag.entry(f).or_default() += From::from(1);
         }
         bag

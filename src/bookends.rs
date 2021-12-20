@@ -1,7 +1,7 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::feature_from::FeatureFrom;
 use crate::internal::impl_ftrzs_2;
 use crate::n_gram::NGram;
-use crate::token_from::TokenFrom;
 use crate::tokengroup::Token;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -32,12 +32,12 @@ where
     type TokenGroup = FrontBack<TA, TB>;
     type Iter = BookEndsIter<A::Iter, B::Iter>;
 
-    fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T]) -> Self::Iter {
         BookEndsIter(
             true,
-            self.front.extract_tokens(&origin[..self.front_size]),
+            self.front.iterate_features(&origin[..self.front_size]),
             self.back
-                .extract_tokens(&origin[origin.len() - self.back_size..]),
+                .iterate_features(&origin[origin.len() - self.back_size..]),
         )
     }
 }
@@ -50,8 +50,8 @@ where
     type TokenGroup = FrontBack<TA, TB>;
     type Iter = BookEndsIter<A::Iter, B::Iter>;
 
-    fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
-        self.extract_tokens(origin.as_bytes())
+    fn iterate_features(&self, origin: &'a str) -> Self::Iter {
+        self.iterate_features(origin.as_bytes())
     }
 }
 
@@ -63,8 +63,8 @@ where
     type TokenGroup = FrontBack<TA, TB>;
     type Iter = BookEndsIter<A::Iter, B::Iter>;
 
-    fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
-        self.extract_tokens(origin.as_str())
+    fn iterate_features(&self, origin: &'a String) -> Self::Iter {
+        self.iterate_features(origin.as_str())
     }
 }
 
@@ -76,8 +76,8 @@ where
     type TokenGroup = FrontBack<TA, TB>;
     type Iter = BookEndsIter<A::Iter, B::Iter>;
 
-    fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
-        self.extract_tokens(&origin[..])
+    fn iterate_features(&self, origin: &'a [T; N]) -> Self::Iter {
+        self.iterate_features(&origin[..])
     }
 }
 
@@ -89,8 +89,8 @@ where
     type TokenGroup = FrontBack<TA, TB>;
     type Iter = BookEndsIter<A::Iter, B::Iter>;
 
-    fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
-        self.extract_tokens(origin.as_slice())
+    fn iterate_features(&self, origin: &'a Vec<T>) -> Self::Iter {
+        self.iterate_features(origin.as_slice())
     }
 }
 */
@@ -129,29 +129,29 @@ pub enum FrontBack<A, B> {
     Back(B),
 }
 
-impl<A, B, C> TokenFrom<FrontBack<A, B>> for Token<C>
+impl<A, B, C> FeatureFrom<FrontBack<A, B>> for Token<C>
 where
-    C: TokenFrom<A> + TokenFrom<B>,
+    C: FeatureFrom<A> + FeatureFrom<B>,
 {
     fn from(x: FrontBack<A, B>) -> Self {
         Token(match x {
-            FrontBack::Front(a) => TokenFrom::from(a),
-            FrontBack::Back(a) => TokenFrom::from(a),
+            FrontBack::Front(a) => FeatureFrom::from(a),
+            FrontBack::Back(a) => FeatureFrom::from(a),
         })
     }
 }
 
 impl_ftrzs_2!(BookEnds<X,Y>);
 
-impl<A, B, Ax, Bx> TokenFrom<FrontBack<A, B>> for Result<Ax, Bx>
+impl<A, B, Ax, Bx> FeatureFrom<FrontBack<A, B>> for Result<Ax, Bx>
 where
-    Ax: TokenFrom<A>,
-    Bx: TokenFrom<B>,
+    Ax: FeatureFrom<A>,
+    Bx: FeatureFrom<B>,
 {
     fn from(x: FrontBack<A, B>) -> Self {
         match x {
-            FrontBack::Front(a) => Ok(TokenFrom::from(a)),
-            FrontBack::Back(a) => Err(TokenFrom::from(a)),
+            FrontBack::Front(a) => Ok(FeatureFrom::from(a)),
+            FrontBack::Back(a) => Err(FeatureFrom::from(a)),
         }
     }
 }
@@ -191,7 +191,7 @@ where
     where
         Push: FnMut(Self::TokenGroup) -> (),
     {
-        for t in self.extract_tokens(origin) {
+        for t in self.iterate_features(origin) {
             push(t)
         }
     }

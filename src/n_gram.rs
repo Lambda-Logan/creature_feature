@@ -43,7 +43,7 @@ where
     type TokenGroup = [T; N];
     type Iter = NGramIter<'a, T, N>;
 
-    fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T]) -> Self::Iter {
         NGramIter {
             idx: 0,
             data: origin,
@@ -64,7 +64,7 @@ where
     type TokenGroup = [T; N];
     type Iter = NGramIter<'a, T, N>;
 
-    fn extract_tokens(&self, origin: &'a Vec<T>) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a Vec<T>) -> Self::Iter {
         NGramIter {
             idx: 0,
             data: origin.as_slice(),
@@ -79,7 +79,7 @@ where
     type TokenGroup = [u8; N];
     type Iter = NGramIter<'a, u8, N>;
 
-    fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a str) -> Self::Iter {
         NGramIter {
             idx: 0,
             data: origin.as_bytes(),
@@ -94,19 +94,19 @@ where
     type TokenGroup = [u8; N];
     type Iter = NGramIter<'a, u8, N>;
 
-    fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
-        self.extract_tokens(origin.as_str())
+    fn iterate_features(&self, origin: &'a String) -> Self::Iter {
+        self.iterate_features(origin.as_str())
     }
 }
 
-impl<'a, T, const N: usize> IterFtzr<&'a [T; N]> for NGram<N>
+impl<'a, T, const N: usize, const M: usize> IterFtzr<&'a [T; M]> for NGram<N>
 where
     [T; N]: TryFrom<&'a [T]>,
 {
     type TokenGroup = [T; N];
     type Iter = NGramIter<'a, T, N>;
 
-    fn extract_tokens(&self, origin: &'a [T; N]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T; M]) -> Self::Iter {
         NGramIter {
             idx: 0,
             data: &origin[..],
@@ -135,7 +135,7 @@ where
     where
         Push: FnMut(Self::TokenGroup) -> (),
     {
-        for t in self.extract_tokens(origin) {
+        for t in self.iterate_features(origin) {
             push(t)
         }
     }

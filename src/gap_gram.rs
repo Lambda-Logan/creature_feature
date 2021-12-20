@@ -1,6 +1,8 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
+use crate::feature_from::FeatureFrom;
 use crate::internal::impl_ftrzs_2;
-use crate::token_from::TokenFrom;
+use crate::multiftzr::EitherGroup;
+use crate::skip_schema::SkipSchema;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -28,8 +30,8 @@ impl<'a, A, B, T, U1: 'a, U2: 'a> GapGramIter<A, B, &'a [T], U1, U2> {
         gap: usize,
         bf: &BF,
     ) -> Self {
-        let a = af.extract_tokens(origin);
-        let b = bf.extract_tokens(&origin[af.chunk_size() + gap..]);
+        let a = af.iterate_features(origin);
+        let b = bf.iterate_features(&origin[af.chunk_size() + gap..]);
         GapGramIter {
             a,
             b,
@@ -84,38 +86,38 @@ impl<A1, A2: From<A1>, B1, B2: From<B1>> From<GapPair<A1, B1>> for (A2, B2) {
     }
 }
 
-impl<A1, A2, B1, B2, C1, C2, D1, D2> TokenFrom<GapPair<GapPair<A1, B1>, GapPair<C1, D1>>>
+impl<A1, A2, B1, B2, C1, C2, D1, D2> FeatureFrom<GapPair<GapPair<A1, B1>, GapPair<C1, D1>>>
     for (A2, B2, C2, D2)
 where
-    A2: TokenFrom<A1>,
-    B2: TokenFrom<B1>,
-    C2: TokenFrom<C1>,
-    D2: TokenFrom<D1>,
+    A2: FeatureFrom<A1>,
+    B2: FeatureFrom<B1>,
+    C2: FeatureFrom<C1>,
+    D2: FeatureFrom<D1>,
 {
     fn from(t: GapPair<GapPair<A1, B1>, GapPair<C1, D1>>) -> Self {
         (
-            TokenFrom::from(t.0 .0),
-            TokenFrom::from(t.0 .1),
-            TokenFrom::from(t.1 .0),
-            TokenFrom::from(t.1 .1),
+            FeatureFrom::from(t.0 .0),
+            FeatureFrom::from(t.0 .1),
+            FeatureFrom::from(t.1 .0),
+            FeatureFrom::from(t.1 .1),
         )
     }
 }
 
-impl<A, B: TokenFrom<A>> TokenFrom<GapPair<GapPair<A, A>, GapPair<A, A>>> for [B; 4] {
+impl<A, B: FeatureFrom<A>> FeatureFrom<GapPair<GapPair<A, A>, GapPair<A, A>>> for [B; 4] {
     fn from(t: GapPair<GapPair<A, A>, GapPair<A, A>>) -> Self {
         [
-            TokenFrom::from(t.0 .0),
-            TokenFrom::from(t.0 .1),
-            TokenFrom::from(t.1 .0),
-            TokenFrom::from(t.1 .1),
+            FeatureFrom::from(t.0 .0),
+            FeatureFrom::from(t.0 .1),
+            FeatureFrom::from(t.1 .0),
+            FeatureFrom::from(t.1 .1),
         ]
     }
 }
 
-impl<A1, A2: TokenFrom<A1>, B1, B2: TokenFrom<B1>> TokenFrom<GapPair<A1, B1>> for (A2, B2) {
+impl<A1, A2: FeatureFrom<A1>, B1, B2: FeatureFrom<B1>> FeatureFrom<GapPair<A1, B1>> for (A2, B2) {
     fn from(sp: GapPair<A1, B1>) -> Self {
-        (TokenFrom::from(sp.0), TokenFrom::from(sp.1))
+        (FeatureFrom::from(sp.0), FeatureFrom::from(sp.1))
     }
 }
 
@@ -133,7 +135,7 @@ where
     type TokenGroup = GapPair<U1, U2>;
     type Iter = GapGramIter<A::Iter, B::Iter, &'a [T], U1, U2>;
 
-    fn extract_tokens(&self, origin: &'a [T]) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a [T]) -> Self::Iter {
         GapGramIter::new(origin, &self.a, self.gap, &self.b)
     }
 }
@@ -152,7 +154,7 @@ where
         self.a.chunk_size() + self.gap + self.b.chunk_size()
     }
 
-    fn extract_tokens(&self, origin: &'a str) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a str) -> Self::Iter {
         GapGramIter::new(&origin.as_bytes(), &self.a, self.gap, &self.b)
     }
 }
@@ -169,7 +171,7 @@ where
         self.a.chunk_size() + self.gap + self.b.chunk_size()
     }
 
-    fn extract_tokens(&self, origin: &'a String) -> Self::Iter {
+    fn iterate_features(&self, origin: &'a String) -> Self::Iter {
         GapGramIter::new(&origin.as_bytes(), &self.a, self.gap, &self.b)
     }
 }*/
@@ -177,35 +179,39 @@ where
 pub fn gap_gram<A, B>(a: A, gap: usize, b: B) -> GapGram<A, B> {
     GapGram { a, gap, b }
 }
-
 /*
-TODO implement Ftzr in terms of Ftzr, for IterFtzr
 impl<'a, T, A, B, TA, TB> Ftzr<&'a [T]> for GapGram<A, B>
 where
-    A: Ftzr<&'a [T], TokenGroup = TA>,
-    B: Ftzr<&'a [T], TokenGroup = TB>,
+    A: LinearFixed + Ftzr<&'a [T], TokenGroup = TA>,
+    B: LinearFixed + Ftzr<&'a [T], TokenGroup = TB>,
+
 {
     type TokenGroup = GapPair<TA, TB>;
     fn push_tokens<Push>(&self, origin: &'a [T], push: &mut Push)
     where
         Push: FnMut(Self::TokenGroup) -> (),
     {
-        {
-            let mut _push = |t| push(FrontBack::Front(t));
-            self.front.push_tokens(origin, &mut _push);
-        }
-        {
-            let mut _push = |t| push(FrontBack::Back(t));
-            self.back.push_tokens(origin, &mut _push);
-        }
+        let (a, b) = (self.a.chunk_size(), self.b.chunk_size());
+        let schema = SkipSchema {
+            group_a: (a, a),
+            gap: (self.gap, self.gap),
+            group_b: (b, b),
+        };
+        let mut _push = |t: EitherGroup<_, _>| match t {
+            EitherGroup::Right(x) => push(x),
+            _ => unreachable!(),
+        };
+        schema.push_tokens(origin, &mut _push);
     }
-} */
+}*/
 
+/*
 ///TODO: a user-implemented featurizer 'F' must impl  IterFtzr (not just Ftzr)
 /// in order for GapGram<F,_> or GapGram<_,F> to impl Ftzr
 /// ForEach and MultiFtzr do not have this limitation
 /// (but BookEnds does)
 /// maybe use a macro similar to internal::impl_ftrzs ??
+*/
 
 impl<Origin, A, B> Ftzr<Origin> for GapGram<A, B>
 where
@@ -216,7 +222,7 @@ where
     where
         Push: FnMut(Self::TokenGroup) -> (),
     {
-        for t in self.extract_tokens(origin) {
+        for t in self.iterate_features(origin) {
             push(t)
         }
     }
