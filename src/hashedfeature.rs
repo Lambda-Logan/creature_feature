@@ -9,7 +9,7 @@ use std::hash::{Hash, Hasher};
 use std::iter::FromIterator;
 
 ///[`HashedAs<U>`] can encode any feature that's hashable. Here, `U` can be `u8`, `u16`, `u32` or `u64`. Hash collisions are usually not a big problem for most uses (especially with `HashedAs<u64>`)
-///`HashedAs` can really speed things up where you need to do a lot of equality comparisons and your feature is longer that `U`. It can also provide more balanced nodes in a BTree.
+///`HashedAs` can really speed things up where you need to do a lot of equality comparisons and your feature is longer that `U`. It can also provide more balanced nodes in a BTree. Currently uses `FxHash`.
 /// # Example: Succinctly implementing MinHash
 /// ```
 ///use creature_feature::ftzrs::bigram;

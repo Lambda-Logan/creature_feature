@@ -3,6 +3,8 @@ name = "creature_feature"
 version = "0.1.0"
 authors = ["Logan Dimond"]
 edition = "2018"
+license = "MPL-2.0"
+exclude = ["/benchmarks", "todo.txt"]
 description = "Composable n-gram combinators that are ergonomic and bare-metal fast."
 
 #keywords = ["featurize", "featurization", "nlp", "ngram", "ngrams", "ml", "tokenization"]
@@ -21,7 +23,3 @@ features = ["serde"]
 [dependencies]
 fxhash = {version = "0.2.1"}
 serde = { version = "1.0.103", features = ["derive"], optional = true }
-ngrams = "1.0.1"
-ngram = "0.1.13"
-ngrammatic = "0.3.3"
-senor_borroso = { git = "https://github.com/Lambda-Logan/senor_borroso"}

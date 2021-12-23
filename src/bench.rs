@@ -3,8 +3,7 @@ use crate::hashedfeature::*;
 use crate::n_gram::*;
 use crate::n_slice::*;
 use crate::tokengroup::chars_of;
-use senor_borroso;
-use senor_borroso::hasfeatures::HasFeatures;
+//use senor_borroso::hasfeatures::HasFeatures;
 use std::time::Instant;
 pub(crate) fn bench() {
     let az = "abcdefghijklmnopqrstuvuxyz1$n34567890!@#$%^&*()";
@@ -30,7 +29,7 @@ pub(crate) fn bench() {
             post / ((k / 10000) as u128)
         );
     }
-    let sb_ftzr = senor_borroso::ftzrs::n_gram;
+    //let sb_ftzr = senor_borroso::ftzrs::n_gram;
     macro_rules! bench_n {
         ($n:expr) => {{
             bench_single($n, &"n_slice + Vec<&str> (from &str)", bigstring, |s| {
@@ -72,6 +71,7 @@ pub(crate) fn bench() {
                 },
             );
 
+            /*
             bench_single(
                 $n,
                 &"senor_borroso + Vec<HashedAs<u64>> (from &str)",
@@ -81,7 +81,7 @@ pub(crate) fn bench() {
                         s.collect_features_with(&sb_ftzr($n));
                     v.len()
                 },
-            );
+            ); */
 
             bench_single(
                 $n,
@@ -203,6 +203,7 @@ pub(crate) fn bench() {
                 },
             );
 
+            /*
             bench_single(
                 $n,
                 &"senor_borroso + Vec<HashedAs<u64>> (from &[char])",
@@ -222,7 +223,7 @@ pub(crate) fn bench() {
                         s.collect_features_with(&sb_ftzr($n));
                     v.len()
                 },
-            );
+            );*/
         }};
     }
     bench_n!(2);
