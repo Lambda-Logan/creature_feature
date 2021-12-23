@@ -2,7 +2,10 @@
  A crate for polymorphic ML & NLP featurization that leverages zero-cost abstraction. It provides composable n-gram combinators that are ergonomic and bare-metal fast. Although created with NLP in mind, it's very general and can be applied in a plethera of domains such as computer vision.
 
  There are many n-gram crates on cargo, but the majority force heap allocation or lock you into a concrete type that doesn’t fit your use-case or performance needs. In most benchmarks, `creature_feature` is anywhere between 4x - 60x faster.
- # A preview of the polymorphic zen
+
+ ![Image](https://raw.githubusercontent.com/Lambda-Logan/creature_feature/master/godzilla_featurization.jpg)
+
+ # A Swiss Army Knife of Featurization
  ```rust
 use creature_feature::traits::Ftzr;
 use creature_feature::ftzrs::{bigram, bislice, for_each, whole};
@@ -24,7 +27,7 @@ let ref_trigram_bag:   Bag<BTreeMap<&str, i16>>   = for_each(whole()).featurize(
 let hashed_trigrams: BTreeSet<HashedAs<u64>> = trislice().featurize(int_data);
 ```
 The above five will have the following values, respectively.
- ```rust
+ ```
  ["on", "ne", "e ", " f", "fi", "is", "sh", "h ", " t", "tw", "wo", "o ", " f", "fi", "is", "sh", "h ", " r", "re", "ed", "d ", " f", "fi", "is", "sh", "h ", " b", "bl", "lu", "ue", "e ", " f", "fi", "is", "sh"]
 
  [[111, 110], [110, 101], [101, 32], [32, 102], [102, 105], [105, 115], [115, 104], [104, 32], [32, 116], [116, 119], [119, 111], [111, 32], [32, 102], [102, 105], [105, 115], [115, 104], [104, 32], [32, 114], [114, 101], [101, 100], [100, 32], [32, 102], [102, 105], [105, 115], [115, 104], [104, 32], [32, 98], [98, 108], [108, 117], [117, 101], [101, 32], [32, 102], [102, 105], [105, 115], [115, 104]]
@@ -150,3 +153,7 @@ impl<'a> Ftzr<&'a Book> for BookFtzr {
 }
  ```
  Now we could easily implement a similarity metric for `Book` via `Vec<HashedAs<u64>>`, like cosine or jaccard.
+
+ # YOU CAN HELP
+
+ I'm actually an English teacher, not a dev. So any PRs, observations or feedback is very welcome. I've done my best to document everything well, but if you have any questions feel free to reach out. Your help with any of the small number of [current issues](https://github.com/Lambda-Logan/creature_feature/issues) would be VERY much welcome :)
