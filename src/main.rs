@@ -6,8 +6,8 @@ mod for_each;
 mod skip_schema;
 #[macro_use]
 mod internal;
+mod convert;
 mod feature_from;
-
 mod whole_empty;
 
 mod bench;
@@ -64,8 +64,8 @@ macro_rules! assert_str_lengths {
 }
 
 fn main() {
-    bench::bench();
-    return ();
+    //bench::bench();
+    //return ();
     let abcde = "abcde";
 
     assert_str_lengths!(4, n_slice(2), abcde);

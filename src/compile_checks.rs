@@ -6,6 +6,8 @@ use crate::feature_from::FeatureFrom;
 use crate::tokengroup::*;
 use crate::whole_empty::*;
 
+use crate::convert::*;
+
 use crate::for_each::*;
 
 use crate::multiftzr::*;
@@ -35,17 +37,16 @@ macro_rules! test_vec_feats {
         assert_eq!(_feats, $v);
     };
 }
-/*
-#[macro_export]
+
 macro_rules! featurizers {
-    () => {
-        (EmptyFtzr::new())
+    ($a:expr) => {
+        $a
     };
     ($a:expr $(, $tail:expr)*) => {{
         MultiFtzr($a, featurizers!($($tail), *),
     )
     }};
-} */
+}
 
 pub(crate) fn run_checks() {
     let bigram = n_gram::<2>();
@@ -177,13 +178,13 @@ pub(crate) fn run_checks() {
     }
     let _feats: Vec<Result<Vec<usize>, HashedAs<u64>>> =
         bookends((bigram, 4), (bigram, 4)).featurize(n_usize_12);
-    let _feats: Vec<Token<Vec<usize>>> = //TODO is this ok????
+    let _feats: Vec<Merged<Vec<usize>>> = //TODO is this ok????
         bookends((bigram, 4), (bigram, 4)).featurize(n_usize_12);
     //let e: EmptyFtzr<usize> = EmptyFtzr::new();
 
-    let _feats: Vec<Token<String>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
+    let _feats: Vec<Merged<String>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
 
-    let _feats: Vec<Token<HashedAs<u64>>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
+    let _feats: Vec<Merged<HashedAs<u64>>> = featurizers!(bislice, n_gram::<3>()).featurize(ak);
     //let _feats: Vec<EitherGroup<_, _>> = MultiFtzr(bigram, n_gram::<3>()).featurize(ak);
 
     //TODO
@@ -192,7 +193,7 @@ pub(crate) fn run_checks() {
     use std::collections::LinkedList;
     //TODO Linked list & friends
     //let _feats: LinkedList<(&str, String)> = gap_gram(bislice, 4, n_gram::<3>()).featurize(ak);
-    let _feats: HashMap<&str, u8> = bislice.featurize(ak);
+    let _feats: Bag<HashMap<&str, u8>> = bislice.featurize(ak);
 
     let _feats: Vec<&str> = for_each(bislice).featurize(sentence.split_ascii_whitespace());
 
@@ -205,11 +206,11 @@ pub(crate) fn run_checks() {
     let doc_iter = doc.lines().map(|line| line.split_ascii_whitespace());
 
     //TODO
-    //let _feats: Vec<Token<HashedAs>> =
+    //let _feats: Vec<Merged<HashedAs>> =
     //    for_each(for_each(bislice.and_then(n_slice(3)))).featurize(doc_iter);
-    //let _feats: Vec<Token<String>> = n_gram::<2>().and_then(n_gram::<3>()).featurize(doc);
-    let _feats: Vec<Token<String>> = featurizers!(bigram, n_gram::<3>()).featurize(doc);
-    let _feats: Vec<Token<&str>> =
+    //let _feats: Vec<Merged<String>> = n_gram::<2>().and_then(n_gram::<3>()).featurize(doc);
+    let _feats: Vec<Merged<String>> = featurizers!(bigram, n_gram::<3>()).featurize(doc);
+    let _feats: Vec<Merged<&str>> =
         for_each(featurizers!(bislice, n_slice(3))).featurize(doc.split_ascii_whitespace());
     let vecdoc: Vec<&str> = Iterator::collect(doc.split_ascii_whitespace());
     let _feats: Vec<((&[&str], &[&str]), (&[&str], &[&str]))> =
@@ -233,7 +234,7 @@ pub(crate) fn run_checks() {
 
     let _feats: Vec<&str> = SizeBasedFtzr.featurize(&"this ");
     let _feats: Vec<&str> = whole().featurize(ak);
-    let _feats: Vec<Token<&str>> = featurizers!(whole(), SizeBasedFtzr).featurize(ak);
+    let _feats: Vec<Merged<&str>> = featurizers!(whole(), SizeBasedFtzr).featurize(ak);
     let _feats: Vec<&str> = for_each(SizeBasedFtzr).featurize(doc.split_ascii_whitespace());
 
     let nums: Vec<_> = Iterator::collect((0..32));
@@ -243,5 +244,8 @@ pub(crate) fn run_checks() {
     let _feats: Vec<([[i32; 1]; 4])> = gap_gram(every_other, 1, every_other).featurize(&nums);
 
     let _feats: (HashSet<HashedAs<u64>>, Vec<&str>) = bislice.featurize_x2(ak);
+    //type Collide = Collisions<&[u8], HashMap<HashedAs<u16>, &str>>;
+    //let _feats: Collisions<&[u8], HashMap<HashedAs<u16>, String>> =
+    //    bislice.featurize::<&[u8], _>(ak);
     println!("{:?}", _feats);
 }

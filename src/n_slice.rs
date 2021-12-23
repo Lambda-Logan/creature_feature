@@ -5,24 +5,37 @@ use crate::internal::impl_ftrzs;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+/// A fixed-length n-gram over referenced data. Created with `n_slice(n)`
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct SliceGram {
     n: usize,
 }
 
+/// general n-grams over referenced data, produces borrowed data (like &str) or multiple `&[T]` of a fixed length. (Compare to `n_gram`)
+/// ```
+/// use creature_feature::ftzrs::n_slice;
+///
+/// let my_ftzr = n_slice(7);
+///
+/// let feats: Vec<&[T]> = my_ftzr.featurize(my_data);
+/// let feats: Vec<&str> = my_ftzr.featurize(my_other_data);
+/// ```
 pub fn n_slice(n: usize) -> SliceGram {
     SliceGram { n }
 }
 
+/// bigrams over referenced data, produces borrowed data (like &str) or multiple `&[T]` of length 2. (Compare to `bigram`)
 pub fn bislice() -> SliceGram {
     SliceGram { n: 2 }
 }
 
+/// trigrams over referenced data, produces borrowed data (like &str) or multiple `&[T]` of length 3. (Compare to `trigram`)
 pub fn trislice() -> SliceGram {
     SliceGram { n: 3 }
 }
 
+/// The associated iterator for SliceGram as IterFtzr<T>>::Iter
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct SliceGramIter<Origin> {

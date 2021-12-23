@@ -3,6 +3,7 @@ use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
 use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
 
+/// A featurizer combinator that will featurize each item of an input iterator. Created with `for_each(ftzr)`.
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ForEach<F, Meta>(F, PhantomData<Meta>);
@@ -69,7 +70,17 @@ where
         }
     }
 }
-
+/// A featurizer combinator that will featurize each item of an input iterator.
+/// ```        
+/// use creature_feature::convert::Bag;
+/// use creature_feature::ftzrs::{whole, for_each};
+/// use std::collections::BTreeMap;
+///
+/// let sentence = "one fish two fish red fish blue fish"
+///                 .split_ascii_whitespace();
+///
+/// let bag_of_words: Bag<BTreeMap<String, i32>> = for_each(whole()).featurize(sentence);
+/// ```
 pub fn for_each<F, Sentence, Word>(f: F) -> ForEach<F, (Sentence, Word)> {
     ForEach(f, PhantomData::default())
 }

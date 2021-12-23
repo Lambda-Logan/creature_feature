@@ -1,26 +1,14 @@
 use crate::accum_ftzr::{Ftzr, IterFtzr};
+use crate::convert::Merged;
 use crate::feature_from::FeatureFrom;
-use crate::tokengroup::Token;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
 
+/// The composition of two featurizers. Created with `featurizers!`
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct MultiFtzr<A, B>(pub A, pub B);
-
-#[macro_export]
-macro_rules! featurizers {
-    ($a:expr) => {
-        $a
-    };
-    ($a:expr $(, $tail:expr)*) => {{
-        MultiFtzr($a, featurizers!($($tail), *),
-    )
-    }};
-}
-
-pub use featurizers;
 
 impl<'a, Origin: 'a, TA: Hash, TB: Hash, A, B> IterFtzr<&'a Origin> for MultiFtzr<A, B>
 where
@@ -40,6 +28,7 @@ where
     }
 }
 
+/// The associated iterator for `MultiFtzr`
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct MultiFtzrIter<A, B>(bool, A, B);
@@ -67,10 +56,13 @@ where
     }
 }
 
+/// The co-product of two values, used as `<MultiFtzr<A,B> as Ftzr<T>>::TokenGroup`.
 #[derive(Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum EitherGroup<A, B> {
+    /// the TokenGroup from running `A` on the input
     Left(A),
+    /// the TokenGroup from running `B` on the input
     Right(B),
 }
 
@@ -102,12 +94,12 @@ where
     }
 }
 
-impl<A, B, X> From<EitherGroup<A, B>> for Token<X>
+impl<A, B, X> From<EitherGroup<A, B>> for Merged<X>
 where
     X: From<A> + From<B>,
 {
     fn from(x: EitherGroup<A, B>) -> Self {
-        Token({
+        Merged({
             match x {
                 EitherGroup::Left(a) => From::from(a),
                 EitherGroup::Right(a) => From::from(a),
@@ -116,12 +108,12 @@ where
     }
 }
 
-impl<A, B, X> FeatureFrom<EitherGroup<A, B>> for Token<X>
+impl<A, B, X> FeatureFrom<EitherGroup<A, B>> for Merged<X>
 where
     X: FeatureFrom<A> + FeatureFrom<B>,
 {
     fn from(x: EitherGroup<A, B>) -> Self {
-        Token({
+        Merged({
             match x {
                 EitherGroup::Left(a) => FeatureFrom::from(a),
                 EitherGroup::Right(a) => FeatureFrom::from(a),

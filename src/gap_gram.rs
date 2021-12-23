@@ -8,6 +8,7 @@ use crate::skip_schema::SkipSchema;
 use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
 
+///The associated iterator of `<GapGram<A,B> as IterFtzr<T>>::Iter`
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GapGramIter<A, B, T, U1, U2> {
@@ -68,6 +69,7 @@ where
     }
 }
 
+/// The featurizer created by [`ftzrs::gap_gram`]
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GapGram<A, B> {
@@ -76,6 +78,7 @@ pub struct GapGram<A, B> {
     b: B,
 }
 
+/// The product of two types. Used as `<GapGram<A,B> as Ftzr<T>>::TokenGroup`
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GapPair<A, B>(pub(crate) A, pub(crate) B, pub(crate) u16); //TODO make names fields
@@ -176,6 +179,36 @@ where
     }
 }*/
 
+/// `gap_gram(ftzr_a, gap, ftzr_b)` will produce a featurizer that runs both `ftzr_a` and `ftzr_b` with a space of `gap` tokens in between. Can be used with [`ftzrs::featurizers!`] to form a skipgram. Both `a` and `b` must consume the input exactly once and have a fixed length. (See `traits::LinearFixed`)
+/// ```
+///use creature_feature::ftzrs::{gap_gram, n_slice};
+///use creature_feature::traits::Ftzr;
+///
+///let data = "0123456789";
+///
+///let unigram = n_slice(1);
+///
+///let ftzr_1 = gap_gram(unigram, 1, unigram);
+///let ftzr_2 = gap_gram(ftzr_1, 3, ftzr_1);
+///
+///let feats: Vec<(&str, &str)> = ftzr_1.featurize(data);
+///println!("{:?}", feats);
+/// //>> [("0", "2"), ("1", "3"), ("2", "4"), ("3", "5"), ("4", "6"), ("5", "7"), ("6", "8"), ("7", "9")]
+///
+///let feats: Vec<(&str, &str, &str, &str)> = ftzr_2.featurize(data);
+///println!("{:?}", feats);
+/// //>> [("0", "2", "6", "8"), ("1", "3", "7", "9")]
+///
+/// ```
+///
+/// # Example: Skipgrams
+/// ```
+/// let gram = n_gram::<2>();
+/// let skip3gram = featurizers!(gap_gram(gram, 0, gram)
+///                              gap_gram(gram, 1, gram),
+///                              gap_gram(gram, 2, gram),
+///                              gap_gram(gram, 3, gram));
+/// ```
 pub fn gap_gram<A, B>(a: A, gap: usize, b: B) -> GapGram<A, B> {
     GapGram { a, gap, b }
 }

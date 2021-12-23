@@ -3,8 +3,9 @@ name = "creature_feature"
 version = "0.1.0"
 authors = ["Logan Dimond"]
 edition = "2018"
+description = "Composable n-gram combinators that are ergonomic and bare-metal fast."
 
-#keywords = ["featurize", "featurization", "nlp", "ngram", "ngrams"]
+#keywords = ["featurize", "featurization", "nlp", "ngram", "ngrams", "ml", "tokenization"]
 
 #categories = ["algorithms", "no-std"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

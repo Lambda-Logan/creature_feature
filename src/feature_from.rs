@@ -1,6 +1,23 @@
-use crate::tokengroup::Token;
+use crate::convert::Output;
 use std::str::from_utf8;
+
+///The trait for features that can be made from another type. It's largely self-explanatory and very similar to [`std::convert::From`], only more accommodating. It's used in `Ftzr::featurize` and `Ftzr::push_tokens_from`.
+/// ```
+///use creature_feature::traits::FeatureFrom;
+///use creature_feature::HashedAs;
+///
+///let data: &[u8] = &[98, 97, 99, 111, 110];
+///
+///let out1: String = FeatureFrom::from(data);
+///
+///let out2: HashedAs<u64> = FeatureFrom::from(data);
+///
+///println!("{:?} can be {:?}", out1, out2);
+///
+/// //>> "bacon" can be HashedAs(13832527907573695876)
+/// ```
 pub trait FeatureFrom<T> {
+    #[allow(missing_docs)]
     fn from(t: T) -> Self;
 }
 
@@ -60,9 +77,9 @@ impl<'a> FeatureFrom<&'a str> for String {
     }
 }
 
-impl<A: Copy, B: FeatureFrom<A>> FeatureFrom<[A; 1]> for Token<B> {
+impl<A: Copy, B: FeatureFrom<A>> FeatureFrom<[A; 1]> for Output<B> {
     fn from(token_group: [A; 1]) -> Self {
-        Token(FeatureFrom::from(token_group[0]))
+        Output(FeatureFrom::from(token_group[0]))
     }
 }
 
@@ -78,12 +95,12 @@ impl<'a> FeatureFrom<&'a [u8]> for String {
     }
 }
 
-impl<A, B, C> FeatureFrom<Result<A, B>> for Token<C>
+impl<A, B, C> FeatureFrom<Result<A, B>> for Output<C>
 where
     C: FeatureFrom<A> + FeatureFrom<B>,
 {
-    fn from(r: Result<A, B>) -> Token<C> {
-        Token(match r {
+    fn from(r: Result<A, B>) -> Output<C> {
+        Output(match r {
             Err(x) => FeatureFrom::from(x),
             Ok(x) => FeatureFrom::from(x),
         })

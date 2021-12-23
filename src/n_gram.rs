@@ -3,10 +3,12 @@ use crate::accum_ftzr::{Ftzr, IterFtzr, LinearFixed};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
+/// The type of a fixed-length n-gram over copied data. Created by `n_gram::<N>()`
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NGram<const N: usize>();
 
+/// The associated iterator for `<NGram<N> as IterFtzr<T>>::Iter`
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct NGramIter<'a, T, const N: usize> {
@@ -114,14 +116,25 @@ where
     }
 }
 
+/// general n-grams over copied data, produces owned data (like String) or multiple `[T; N]`. (Compare to `n_slice`)
+/// ```
+/// use creature_feature::ftzrs::n_gram;
+///
+/// let my_ftzr = n_gram::<7>();
+///
+/// let feats: Vec<[T; 7]> = my_ftzr.featurize(my_data);
+/// let feats: Vec<String> = my_ftzr.featurize(my_other_data);
+/// ```
 pub fn n_gram<const N: usize>() -> NGram<N> {
     NGram::<N>()
 }
 
+/// bigrams over copied data, produces owned data (like String) or multiple `[T; 2]`. (Compare to `bislice`)
 pub fn bigram() -> NGram<2> {
     NGram::<2>()
 }
 
+/// trigrams over copied data, produces owned data (like String) or multiple `[T; 3]`. (Compare to `trislice`)
 pub fn trigram() -> NGram<3> {
     NGram::<3>()
 }
