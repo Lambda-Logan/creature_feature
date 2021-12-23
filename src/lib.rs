@@ -15,8 +15,8 @@
 //! A crate for polymorphic ML & NLP featurization that leverages zero-cost abstraction. It provides composable n-gram combinators that are ergonomic and bare-metal fast. Although created with NLP in mind, it's very general and can be applied in a plethera of domains such as computer vision.
 //!
 //! There are many n-gram crates on cargo, but the majority force heap allocation or lock you into a concrete type that doesn’t fit your use-case or performance needs. In most benchmarks, `creature_feature` is anywhere between 4x - 60x faster.
-//! # A preview of the polymorphic zen
-//! ```
+//! # A Swiss Army Knife of Featurization
+//! ```rust
 //!use creature_feature::traits::Ftzr;
 //!use creature_feature::ftzrs::{bigram, bislice, for_each, whole};
 //!use creature_feature::HashedAs;
@@ -51,7 +51,7 @@
 //!
 //! Here are more examples of what's possible:
 //!  
-//!```
+//!```rust
 //! // let's now switch to 'bigram'
 //!let owned_feats: BTreeSet<[u8; 2]>        = bigram().featurize(str_data);
 //!let owned_feats: Vec<String>              = bigram().featurize(str_data);
@@ -69,7 +69,7 @@
 //! ```
 //!
 //! ### We can even produce multiple outputs while still only featurizing the input once
-//! ```
+//! ```rust
 //! let (set, list): (BTreeSet<HashedAs<u64>>, Vec<&str>) = bislice().featurize_x2(str_data);
 //! ```
 //!
@@ -115,7 +115,7 @@
 //!
 //! # Example: Featurizing books
 //! Consider a custom struct to represent a book
-//! ```
+//! ```rust
 //!struct Book {
 //!    author: String,
 //!    genre: Genre,
@@ -144,7 +144,7 @@
 //!}
 //! ```
 //! We can easily make a custom featurizer for `Book` by visitation with [`traits::Ftzr`].
-//! ```
+//! ```rust
 //!use creature_feature::ftzrs::whole;
 //!use creature_feature::traits::*;
 //!use creature_feature::HashedAs;
