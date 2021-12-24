@@ -1,6 +1,6 @@
 [package]
 name = "creature_feature"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Logan Dimond"]
 edition = "2018"
 license = "MPL-2.0"
