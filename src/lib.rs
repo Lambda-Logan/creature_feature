@@ -174,8 +174,8 @@
 //! Now we could easily implement a similarity metric for `Book` via `Vec<HashedAs<u64>>`, like cosine or jaccard.
 //!
 //! # Usage notes
-//! *No bounds checking is performed. This is the responsibility of the user.
-//! *To handle unicode, convert to `Vec<char>`
+//! * No bounds checking is performed. This is the responsibility of the user.
+//! * To handle unicode, convert to `Vec<char>`
 //!
 //!
 //! # YOU CAN HELP

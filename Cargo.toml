@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["Logan Dimond"]
 edition = "2018"
 license = "MPL-2.0"
+repository = "https://github.com/Lambda-Logan/creature_feature/"
+homepage = "https://github.com/Lambda-Logan/creature_feature/blob/master/README.md"
 exclude = ["/benchmarks", "todo.txt"]
 description = "Composable n-gram combinators that are ergonomic and bare-metal fast."
 
