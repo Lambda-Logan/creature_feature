@@ -18,7 +18,7 @@ pub struct BookEnds<A, B> {
     back_size: usize,
 }
 
-/// A tool to featurize prefixes and suffixes. `bookends((a, n), (b, m))` will run featurizer `a` for the first `n` tokens and will run featurizer `b` for the last `n` tokens. All tokens between are skipped.
+/// A tool to featurize prefixes and suffixes. `bookends((a, n), (b, m))` will run featurizer `a` for the first `n` tokens and will run featurizer `b` for the last `m` tokens. All tokens between are skipped.
 /// # Example
 /// ```
 ///use creature_feature::ftzrs::misc::FrontBack;

@@ -16,7 +16,13 @@
 //!
 //! There are many n-gram crates on cargo, but the majority force heap allocation or lock you into a concrete type that doesn’t fit your use-case or performance needs. In most benchmarks, `creature_feature` is anywhere between 4x - 60x faster.
 //!
+//!
 //! ![Image](https://raw.githubusercontent.com/Lambda-Logan/creature_feature/master/godzilla_featurization.jpg)
+//!
+//! # See a live demo
+//!
+//! [Here](https://ecstatic-leakey-c7a4fc.netlify.app/)  is a live demo of creature_feature using WASM
+//!
 //!
 //! # A Swiss Army Knife of Featurization
 //! ```rust
@@ -166,6 +172,11 @@
 //!}
 //! ```
 //! Now we could easily implement a similarity metric for `Book` via `Vec<HashedAs<u64>>`, like cosine or jaccard.
+//!
+//! # Usage notes
+//! *No bounds checking is performed. This is the responsibility of the user.
+//! *To handle unicode, convert to `Vec<char>`
+//!
 //!
 //! # YOU CAN HELP
 //!

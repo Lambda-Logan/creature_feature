@@ -70,7 +70,7 @@ where
         }
     }
 }
-/// A featurizer combinator that will featurize each item of an input iterator.
+/// A featurizer combinator that will featurize each item of an input iterator. Note that it, logically, is nestable: `for_each(for_each(ftzr))` will featurize an iterable of iterables.
 /// ```        
 /// use creature_feature::convert::Bag;
 /// use creature_feature::ftzrs::{whole, for_each};
