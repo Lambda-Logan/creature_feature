@@ -37,7 +37,7 @@
 //!
 //! // notice how the left-hand side remains almost unchanged.
 //!
-//! // we're using 'bislice' right now, 'bigram' would yield owned data instead of references
+//! // we're using 'bislice' right now (which is a 2-gram of referenced data), 'ftzrs::bigram' would yield owned data instead of references
 //!
 //! let ref_feats: Vec<&str>                  = bislice().featurize(str_data);
 //!let ref_feats: LinkedList<&[u8]>          = bislice().featurize(str_data);
