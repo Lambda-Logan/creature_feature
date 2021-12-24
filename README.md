@@ -2,7 +2,7 @@
  # CREATURE FEATUR(ization)
  A crate for polymorphic ML & NLP featurization that leverages zero-cost abstraction. It provides composable n-gram combinators that are ergonomic and bare-metal fast. Although created with NLP in mind, it's very general and can be applied in a plethera of domains such as computer vision.
 
- There are many n-gram crates on cargo, but the majority force heap allocation or lock you into a concrete type that doesn’t fit your use-case or performance needs. In most benchmarks, `creature_feature` is anywhere between 4x - 60x faster.
+ There are many n-gram crates, but the majority force heap allocation or lock you into a concrete type that doesn’t fit your use-case or performance needs. In most benchmarks, `creature_feature` is anywhere between 4x - 60x faster.
 
 
  ![Image](https://raw.githubusercontent.com/Lambda-Logan/creature_feature/master/godzilla_featurization.jpg)
