@@ -1,9 +1,16 @@
+
  # CREATURE FEATUR(ization)
  A crate for polymorphic ML & NLP featurization that leverages zero-cost abstraction. It provides composable n-gram combinators that are ergonomic and bare-metal fast. Although created with NLP in mind, it's very general and can be applied in a plethera of domains such as computer vision.
 
  There are many n-gram crates on cargo, but the majority force heap allocation or lock you into a concrete type that doesn’t fit your use-case or performance needs. In most benchmarks, `creature_feature` is anywhere between 4x - 60x faster.
 
+
  ![Image](https://raw.githubusercontent.com/Lambda-Logan/creature_feature/master/godzilla_featurization.jpg)
+
+ # See a live demo
+
+ [Here](https://ecstatic-leakey-c7a4fc.netlify.app/)  is a live demo of creature_feature using WASM
+
 
  # A Swiss Army Knife of Featurization
  ```rust
@@ -18,7 +25,7 @@ let str_data = "one fish two fish red fish blue fish";
 
  // notice how the left-hand side remains almost unchanged.
 
- // we're using 'bislice' right now, 'bigram' would yield owned data instead of references
+ // we're using 'bislice' right now (which is a 2-gram of referenced data), 'ftzrs::bigram' would yield owned data instead of references
 
  let ref_feats: Vec<&str>                  = bislice().featurize(str_data);
 let ref_feats: LinkedList<&[u8]>          = bislice().featurize(str_data);
@@ -153,6 +160,11 @@ impl<'a> Ftzr<&'a Book> for BookFtzr {
 }
  ```
  Now we could easily implement a similarity metric for `Book` via `Vec<HashedAs<u64>>`, like cosine or jaccard.
+
+ # Usage notes
+ * No bounds checking is performed. This is the responsibility of the user.
+ * To handle unicode, convert to `Vec<char>`
+
 
  # YOU CAN HELP
 
