@@ -4,6 +4,7 @@ use crate::gap_gram::GapPair;
 use fxhash::FxHasher64;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+use nohash_hasher::IsEnabled;
 use std::cmp::Reverse;
 use std::hash::{Hash, Hasher};
 use std::iter::FromIterator;
@@ -34,6 +35,9 @@ use std::iter::FromIterator;
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct HashedAs<T>(pub(crate) T);
 
+
+type TheHasher = FxHasher64;
+
 macro_rules! impl_hashed {
     ($u_type:ty) => {
         impl<A: Hash> FromIterator<A> for HashedAs<$u_type> {
@@ -41,7 +45,7 @@ macro_rules! impl_hashed {
             where
                 T: IntoIterator<Item = A>,
             {
-                let mut h = FxHasher64::default();
+                let mut h = TheHasher::default();
                 for t in iter.into_iter() {
                     t.hash(&mut h);
                 }
@@ -57,20 +61,26 @@ macro_rules! impl_hashed {
         } */
         impl<T: Hash> FeatureFrom<T> for HashedAs<$u_type> {
             fn from(token_group: T) -> Self {
-                let mut h = FxHasher64::default();
+                let mut h = TheHasher::default();
                 token_group.hash(&mut h);
                 HashedAs(h.finish() as $u_type)
             }
         }
         impl<T: Hash, V: Hash> From<GapPair<T, V>> for HashedAs<$u_type> {
             fn from(x: GapPair<T, V>) -> Self {
-                let mut h = FxHasher64::default();
+                let mut h = TheHasher::default();
                 x.0.hash(&mut h);
                 [x.2, 4567].hash(&mut h);
                 x.0.hash(&mut h);
                 HashedAs(h.finish() as $u_type)
             }
         }
+    
+    impl IsEnabled for HashedAs<$u_type> {
+
+    }
+
+
     };
 }
 
