@@ -26,3 +26,10 @@ features = ["serde"]
 fxhash = {version = "0.2.1"}
 nohash-hasher = "0.2.0"
 serde = { version = "1.0.103", features = ["derive"], optional = true }
+
+[dev-dependencies]
+criterion = "0.4"
+
+[[bench]]
+name = "bench_criterionized_runner"
+harness = false

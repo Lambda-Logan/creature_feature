@@ -261,3 +261,35 @@ pub mod ftzrs {
         pub use super::super::whole_empty::{Empty, EmptyAtom, Whole};
     }
 }
+
+
+/// The custom benchmark (`src/bench.rs`) is being rewritten for Criterion: `src/bench_criterionized.rs`.
+/// It is run by `bench/bench_criterionized_runner.rs`.
+pub mod bench_criterionized;
+
+
+#[cfg(test)]
+mod tests {
+    use crate::ftzrs::{bislice, bigram};
+    use crate::accum_ftzr::Ftzr; // because of the `featurize` method
+
+    #[test]
+    fn test_for_vec_of_str_slices() {
+        let vec_of_str_slices: Vec<&str> = bislice().featurize("one fish");
+        assert_eq!(vec_of_str_slices, vec!["on", "ne", "e ", " f", "fi", "is", "sh"]);
+    }
+
+    // n = 2 @ creature_feature::slice_gram + Vec<&[u8]> (from &str):
+    #[test]
+    fn test_for_vec_of_2_length_array_slices() {
+        let vec_of_2_length_array_slices: Vec<&[u8]> = bislice().featurize("one fish");
+        assert_eq!(vec_of_2_length_array_slices, vec![&[b'o', b'n'], &[b'n', b'e'], &[b'e', b' '], &[b' ', b'f'], &[b'f', b'i'], &[b'i', b's'], &[b's', b'h']]);
+    }
+
+    // n = 2 @ creature_feature::n_gram + Vec<[u8; N]> (from &str):
+    #[test]
+    fn test_for_vec_of_2_length_arrays() {
+        let vec_of_2_length_arrays: Vec<[u8; 2]> = bigram().featurize("one fish");
+        assert_eq!(vec_of_2_length_arrays, vec![[b'o', b'n'], [b'n', b'e'], [b'e', b' '], [b' ', b'f'], [b'f', b'i'], [b'i', b's'], [b's', b'h']]);
+    }
+}
