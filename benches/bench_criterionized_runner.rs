@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
-use creature_feature::bench_criterionized::{benchmark_for_vec_of_n_length_array_slices, benchmark_for_vec_of_n_length_arrays};
+use creature_feature::bench_criterionized::{touch_example_for_vec_of_n_length_array_slices, touch_example_for_vec_of_n_length_arrays};
 
 fn big_comparison_benchmark(c_manager: &mut Criterion) {
     let az = "abcdefghijklmnopqrstuvuxyz1$n34567890!@#$%^&*()";
@@ -16,7 +16,7 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
             BenchmarkId::new("benchmark_for_vec_of_n_length_array_slices", *ref_n),
             ref_n,
             |b_timer, ref_n| b_timer.iter(
-                || benchmark_for_vec_of_n_length_array_slices(black_box(bigstring), *ref_n)
+                || touch_example_for_vec_of_n_length_array_slices(black_box(bigstring), *ref_n)
             )
         );
 
@@ -24,7 +24,7 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
             BenchmarkId::new("benchmark_for_vec_of_n_length_arrays", *ref_n),
             ref_n,
             |b_timer, ref_n| b_timer.iter(
-                || benchmark_for_vec_of_n_length_arrays(black_box(bigstring), *ref_n)
+                || touch_example_for_vec_of_n_length_arrays(black_box(bigstring), *ref_n)
             )
         );
     }
