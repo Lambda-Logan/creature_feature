@@ -28,7 +28,7 @@ nohash-hasher = "0.2.0"
 serde = { version = "1.0.103", features = ["derive"], optional = true }
 
 [dev-dependencies]
-criterion = "0.4"
+criterion = "0.3"
 
 [[bench]]
 name = "bench_criterionized_runner"
