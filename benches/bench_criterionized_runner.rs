@@ -1,5 +1,13 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
-use creature_feature::bench_criterionized::{touch_example_for_vec_of_n_length_array_slices, touch_example_for_vec_of_n_length_arrays};
+use creature_feature::ftzrs::{n_slice, n_gram};
+use creature_feature::traits::Ftzr; // because of the `featurize` method
+
+
+// Benchmark #6: n_slice + Vec<&[u8]> (from &str)
+fn touch_example_for_vec_of_n_length_array_slices(bigstring: &str, n: usize) -> usize {
+    let vec_of_n_length_array_slices: Vec<&[u8]> = n_slice(n).featurize(bigstring);
+    vec_of_n_length_array_slices.len()
+}
 
 fn big_comparison_benchmark(c_manager: &mut Criterion) {
     let az = "abcdefghijklmnopqrstuvuxyz1$n34567890!@#$%^&*()";
@@ -11,23 +19,35 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
 
     let mut comparison_group = c_manager.benchmark_group("Comparison group");
 
-    for ref_n in [2, 4, 8, 16, 32, 64, 128].iter() {
-        comparison_group.bench_with_input(
-            BenchmarkId::new("benchmark_for_vec_of_n_length_array_slices", *ref_n),
-            ref_n,
-            |b_timer, ref_n| b_timer.iter(
-                || touch_example_for_vec_of_n_length_array_slices(black_box(bigstring), *ref_n)
-            )
-        );
-
-        comparison_group.bench_with_input(
-            BenchmarkId::new("benchmark_for_vec_of_n_length_arrays", *ref_n),
-            ref_n,
-            |b_timer, ref_n| b_timer.iter(
-                || touch_example_for_vec_of_n_length_arrays(black_box(bigstring), *ref_n)
-            )
-        );
+    macro_rules! comparison_item_benchmark {
+        ($n: expr) => {{
+            comparison_group.bench_with_input(
+                BenchmarkId::new("benchmark_for_vec_of_n_length_array_slices", $n),
+                &$n,
+                |b_timer, ref_n| b_timer.iter(
+                    || touch_example_for_vec_of_n_length_array_slices(black_box(bigstring), *ref_n)
+                )
+            );
+            comparison_group.bench_with_input(
+                BenchmarkId::new("benchmark_for_vec_of_n_length_arrays", $n),
+                &$n,
+                |b_timer, _| b_timer.iter(
+                    || {// Benchmark #7: n_gram + Vec<[u8; N]> (from &str)
+                        let vec_of_n_length_arrays: Vec<[u8; $n]> = n_gram::<$n>().featurize(bigstring);
+                        vec_of_n_length_arrays.len()
+                    }
+                )
+            );
+        }}
     }
+
+    comparison_item_benchmark!(  2);
+    comparison_item_benchmark!(  4);
+    comparison_item_benchmark!(  8);
+    comparison_item_benchmark!( 16);
+    comparison_item_benchmark!( 32);
+    comparison_item_benchmark!( 64);
+    comparison_item_benchmark!(128);
 
     comparison_group.finish();
 }
