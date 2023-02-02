@@ -1,4 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
+
+use creature_feature::HashedAs;
 use creature_feature::ftzrs::{n_slice, n_gram};
 use creature_feature::traits::Ftzr; // because of the `featurize` method
 
@@ -13,10 +15,63 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
 
     let mut comparison_group = c_manager.benchmark_group("Comparison group");
 
-    macro_rules! comparison_item_benchmark { // Note also the ampersand display problem, see comments below:
+    // Note also the ampersand display problem: ASCII ampersand (&, i.e. U+0026) not appearing on plot diagram labels.
+    // Thus, at each `BechmarkId` label, I use the `small ampersand' ﹠(U+FE60) instead!
+    macro_rules! comparison_item_benchmark {
         ($n: expr) => {{
-            comparison_group.bench_with_input(
-                BenchmarkId::new("n_slice + Vec<﹠[u8]> (from ﹠str)", $n), // the `small ampersand' ﹠(U+FE60), instead of the ASCII & (U+0026)
+            // The refactored benches out of the old benchmark module `bench.rs`:
+            comparison_group.bench_with_input( // from old bench #1
+                BenchmarkId::new("n_slice + Vec<﹠str> (from ﹠str)", $n),
+                &$n,
+                |b_timer, ref_n| b_timer.iter(
+                    || {
+                        let vec_of_string_slices: Vec<&str> = n_slice(*ref_n).featurize(black_box(bigstring));
+                        vec_of_string_slices.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #2
+                BenchmarkId::new("n_slice + Vec<HashedAs<u64>> (from ﹠str)", $n), // note the ampersand
+                &$n,
+                |b_timer, ref_n| b_timer.iter(
+                    || {
+                        let vec_of_hashes: Vec<HashedAs<u64>> = n_slice(*ref_n).featurize(black_box(bigstring));
+                        vec_of_hashes.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #3
+                BenchmarkId::new("n_gram + Vec<HashedAs<u64>> (from ﹠str)", $n), // note the ampersand
+                &$n,
+                |b_timer, _| b_timer.iter(
+                    || {
+                        let vec_of_hashes: Vec<HashedAs<u64>> = n_gram::<$n>().featurize(black_box(bigstring));
+                        vec_of_hashes.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #4
+                BenchmarkId::new("n_slice + Vec<HashedAs<u16>> (from ﹠str)", $n), // note the ampersand
+                &$n,
+                |b_timer, ref_n| b_timer.iter(
+                    || {
+                        let vec_of_hashes: Vec<HashedAs<u16>> = n_slice(*ref_n).featurize(black_box(bigstring));
+                        vec_of_hashes.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #5
+                BenchmarkId::new("n_gram + Vec<HashedAs<u16>> (from ﹠str)", $n), // note the ampersand
+                &$n,
+                |b_timer, _| b_timer.iter(
+                    || {
+                        let vec_of_hashes: Vec<HashedAs<u16>> = n_gram::<$n>().featurize(black_box(bigstring));
+                        vec_of_hashes.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #6
+                BenchmarkId::new("n_slice + Vec<﹠[u8]> (from ﹠str)", $n), // note the ampersand
                 &$n,
                 |b_timer, ref_n| b_timer.iter(
                     || {
@@ -25,8 +80,8 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
                     }
                 )
             );
-            comparison_group.bench_with_input(
-                BenchmarkId::new("n_gram + Vec<[u8,N]> (from ﹠str)", $n), // the `small ampersand' ﹠(U+FE60), instead of the ASCII & (U+0026)
+            comparison_group.bench_with_input( // from old bench #7
+                BenchmarkId::new("n_gram + Vec<[u8,N]> (from ﹠str)", $n), // note the ampersand
                 &$n,
                 |b_timer, _| b_timer.iter(
                     || {
