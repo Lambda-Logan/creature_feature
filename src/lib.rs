@@ -263,10 +263,6 @@ pub mod ftzrs {
 }
 
 
-/// The custom benchmark (`src/bench.rs`) is being rewritten for Criterion: `src/bench_criterionized.rs`.
-/// It is run by `bench/bench_criterionized_runner.rs`.
-pub mod bench_criterionized;
-
 
 #[cfg(test)]
 mod tests {

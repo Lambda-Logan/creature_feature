@@ -3,12 +3,6 @@ use creature_feature::ftzrs::{n_slice, n_gram};
 use creature_feature::traits::Ftzr; // because of the `featurize` method
 
 
-// Benchmark #6: n_slice + Vec<&[u8]> (from &str)
-fn touch_example_for_vec_of_n_length_array_slices(bigstring: &str, n: usize) -> usize {
-    let vec_of_n_length_array_slices: Vec<&[u8]> = n_slice(n).featurize(bigstring);
-    vec_of_n_length_array_slices.len()
-}
-
 fn big_comparison_benchmark(c_manager: &mut Criterion) {
     let az = "abcdefghijklmnopqrstuvuxyz1$n34567890!@#$%^&*()";
     let mut bigstring = "".to_owned();
@@ -22,18 +16,21 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
     macro_rules! comparison_item_benchmark {
         ($n: expr) => {{
             comparison_group.bench_with_input(
-                BenchmarkId::new("benchmark_for_vec_of_n_length_array_slices", $n),
+                BenchmarkId::new("n_slice + Vec<&[u8]> (from &str)", $n),
                 &$n,
                 |b_timer, ref_n| b_timer.iter(
-                    || touch_example_for_vec_of_n_length_array_slices(black_box(bigstring), *ref_n)
+                    || {
+                        let vec_of_n_length_array_slices: Vec<&[u8]> = n_slice(*ref_n).featurize(black_box(bigstring));
+                        vec_of_n_length_array_slices.len()
+                    }
                 )
             );
             comparison_group.bench_with_input(
-                BenchmarkId::new("benchmark_for_vec_of_n_length_arrays", $n),
+                BenchmarkId::new("n_gram + Vec<[u8,N]> (from &str)", $n),
                 &$n,
                 |b_timer, _| b_timer.iter(
-                    || {// Benchmark #7: n_gram + Vec<[u8; N]> (from &str)
-                        let vec_of_n_length_arrays: Vec<[u8; $n]> = n_gram::<$n>().featurize(bigstring);
+                    || {
+                        let vec_of_n_length_arrays: Vec<[u8; $n]> = n_gram::<$n>().featurize(black_box(bigstring));
                         vec_of_n_length_arrays.len()
                     }
                 )
