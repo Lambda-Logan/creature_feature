@@ -13,10 +13,10 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
 
     let mut comparison_group = c_manager.benchmark_group("Comparison group");
 
-    macro_rules! comparison_item_benchmark {
+    macro_rules! comparison_item_benchmark { // Note also the ampersand display problem, see comments below:
         ($n: expr) => {{
             comparison_group.bench_with_input(
-                BenchmarkId::new("n_slice + Vec<&[u8]> (from &str)", $n),
+                BenchmarkId::new("n_slice + Vec<﹠[u8]> (from ﹠str)", $n), // the `small ampersand' ﹠(U+FE60), instead of the ASCII & (U+0026)
                 &$n,
                 |b_timer, ref_n| b_timer.iter(
                     || {
@@ -26,7 +26,7 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
                 )
             );
             comparison_group.bench_with_input(
-                BenchmarkId::new("n_gram + Vec<[u8,N]> (from &str)", $n),
+                BenchmarkId::new("n_gram + Vec<[u8,N]> (from ﹠str)", $n), // the `small ampersand' ﹠(U+FE60), instead of the ASCII & (U+0026)
                 &$n,
                 |b_timer, _| b_timer.iter(
                     || {
