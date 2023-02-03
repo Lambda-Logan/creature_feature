@@ -3,6 +3,7 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion, Benchmark
 use creature_feature::HashedAs;
 use creature_feature::ftzrs::{n_slice, n_gram};
 use creature_feature::traits::Ftzr; // because of the `featurize` method
+use creature_feature::tokengroup::chars_of;
 
 
 fn big_comparison_benchmark(c_manager: &mut Criterion) {
@@ -87,6 +88,49 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
                     || {
                         let vec_of_n_length_arrays: Vec<[u8; $n]> = n_gram::<$n>().featurize(black_box(bigstring));
                         vec_of_n_length_arrays.len()
+                    }
+                )
+            );
+
+            let chars = chars_of(bigstring);
+
+            comparison_group.bench_with_input( // from old bench #8
+                BenchmarkId::new("n_gram + Vec<[char; N]> (from Vec<char>)", $n),
+                &$n,
+                |b_timer, _| b_timer.iter(
+                    || {
+                        let vec_of_n_length_arrays: Vec<[char; $n]> = n_gram::<$n>().featurize(black_box(&chars));
+                        vec_of_n_length_arrays.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #9
+                BenchmarkId::new("n_slice + Vec<﹠[char]> (from Vec<char>)", $n), // note the ampersand
+                &$n,
+                |b_timer, ref_n| b_timer.iter(
+                    || {
+                        let vec_of_n_length_array_slices: Vec<&[char]> = n_slice(*ref_n).featurize(black_box(&chars));
+                        vec_of_n_length_array_slices.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #10
+                BenchmarkId::new("n_gram + Vec<HashedAs<u64>> (from Vec<char>)", $n),
+                &$n,
+                |b_timer, _| b_timer.iter(
+                    || {
+                        let vec_of_hashes: Vec<HashedAs<u64>> = n_gram::<$n>().featurize(black_box(&chars));
+                        vec_of_hashes.len()
+                    }
+                )
+            );
+            comparison_group.bench_with_input( // from old bench #11
+                BenchmarkId::new("n_slice + Vec<HashedAs<u64>> (from Vec<char>)", $n), // note the ampersand
+                &$n,
+                |b_timer, ref_n| b_timer.iter(
+                    || {
+                        let vec_of_hashes: Vec<HashedAs<u64>> = n_slice(*ref_n).featurize(black_box(&chars));
+                        vec_of_hashes.len()
                     }
                 )
             );

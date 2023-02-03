@@ -187,7 +187,9 @@ mod internal;
 mod feature_from;
 //use feature_from::FeatureFrom;
 mod skip_schema;
-mod tokengroup;
+
+/// Besides internal usage, the Criterion benchmark uses it:
+pub mod tokengroup;
 
 /*
 pub mod utils {
