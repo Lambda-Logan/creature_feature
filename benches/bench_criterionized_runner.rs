@@ -81,7 +81,7 @@ fn big_comparison_benchmark(c_manager: &mut Criterion) {
                 )
             );
             comparison_group.bench_with_input( // from old bench #7
-                BenchmarkId::new("n_gram + Vec<[u8,N]> (from ﹠str)", $n), // note the ampersand
+                BenchmarkId::new("n_gram + Vec<[u8; N]> (from ﹠str)", $n), // note the ampersand
                 &$n,
                 |b_timer, _| b_timer.iter(
                     || {
