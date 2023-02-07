@@ -39,3 +39,13 @@ For completeness of the explanations, we can make also a third auxiliary group: 
 thus, this is a grouping to show a mixed, crosscutting selection of samples together. Although this group does not repeat all benches lumped together, but still it is a selection that shows too large samples together with too small ones, intentionally in order to show the visualizability problem why we have to avoid lumping together the small and the large bench items and maintain a carefully planned grouping policy.
 
 Now, after having seen the above generated diagrams, the details of the benchmarks can be seen in the module itself that solves the task accordingly: the `benches/bench_criterionized_runners.rs` module. As mentioned, the former, earlier benchmark module is `src/benches`. In short: `benches/bench_criterionized_runners.rs` is a refactored, criterionized version of `src/benches`.
+
+## To do
+
+As for future improvements:
+
+* The benchmarks in the [benches/bench_criterionized_runner.rs](../benches/bench_criterionized_runner.rs) file can be made more DRY, lessening redundancy, by more sophisticated usage of macros.
+* Unlike the old bechmarks in the [src/bench.rs](../src/bench.rs) file, the new benchmarks of the [benches/bench_criterionized_runner.rs](../benches/bench_criterionized_runner.rs) file do not make use of the length results (thus, this functionality of the old benches gets lost in the new ones). The use and integration of this length info into a statistics of Criterion can be a goal of a further development.
+* During the criterionization, some provacy settings have been changed of the API, it can be revised:
+    * `mod tokengroup` to `pub mod tokengroup` in `src/lib.rs`
+    * `pub(crate) fn chars_of` to `pub fn chars_of` in `src/tokengroup`
