@@ -2,6 +2,15 @@
 
 The project has benchmarks in its [src/bench.rs](../src/bench.rs) file. These benchamrks have been copied and refactored into new, Criterion-ized style ([benches/bench_criterionized_runner.rs](../benches/bench_criterionized_runner.rs)). This uses Criterion's comparing (comparison group) facility (`benchmark_group`), augmented with the input parametricity (`bench_with_input`). This enables the generation of a well-demostrable comparison diagram of compared colored function graphs.
 
+## Table of contents
+
+* [Approaches for groupings of benchmarks](#approaches-for-groupings-of-benchmarks)
+* [Grouping by type of the big input](#grouping-by-type-of-the-big-input)
+    * [Grouping those benches together where the big input data is a string slice](#grouping-those-benches-together-where-the-big-input-data-is-a-string-slice)
+    * [Grouping those together benches where the big input data is ref to a Vec of chars](#grouping-those-together-benches-where-the-big-input-data-is-ref-to-a-vec-of-chars)
+* [Cross-section](#cross-section)
+* [To do](#to-do)
+
 ## Approaches for groupings of benchmarks
 
 As a first apprach, we can put all benchmarks into one single big comparison group. Here below are shown the examples of the generated bechmark plottings, and these diagrams demonstrate what the problems with this first approach is. After several experimentations, here we can see the result diagrams of the various big experimentational runnings:
