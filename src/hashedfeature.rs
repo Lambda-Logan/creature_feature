@@ -2,9 +2,9 @@ use crate::convert::{Output, SelfOut};
 use crate::feature_from::FeatureFrom;
 use crate::gap_gram::GapPair;
 use fxhash::FxHasher64;
+use nohash_hasher::IsEnabled;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use nohash_hasher::IsEnabled;
 use std::cmp::Reverse;
 use std::hash::{Hash, Hasher};
 use std::iter::FromIterator;
@@ -34,7 +34,6 @@ use std::iter::FromIterator;
 #[derive(Hash, Copy, Clone, PartialEq, Ord, PartialOrd, Eq, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct HashedAs<T>(pub(crate) T);
-
 
 type TheHasher = FxHasher64;
 
@@ -75,12 +74,12 @@ macro_rules! impl_hashed {
                 HashedAs(h.finish() as $u_type)
             }
         }
-    
-    impl IsEnabled for HashedAs<$u_type> {
-
-    }
-
-
+        impl Into<$u_type> for HashedAs<$u_type> {
+            fn into(self) -> $u_type {
+                self.0
+            }
+        }
+        impl IsEnabled for HashedAs<$u_type> {}
     };
 }
 
