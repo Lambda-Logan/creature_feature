@@ -39,9 +39,11 @@ impl<T: Clone, const N: usize> FeatureFrom<[T; N]> for Vec<T> {
     }
 }
 
+const UTF_ERR_MSG: &'static str = &"Featurizing into &str is only supported for ASCII, not unicode. Please first convert your input data to a Vec<char>. This is noted on the first page of the docs, at the bottom.";
+
 impl<const N: usize> FeatureFrom<[u8; N]> for String {
     fn from(token_group: [u8; N]) -> Self {
-        from_utf8(&token_group).unwrap().to_owned()
+        from_utf8(&token_group).expect(UTF_ERR_MSG).to_owned()
     }
 }
 impl<const N: usize> FeatureFrom<[char; N]> for String {
@@ -62,7 +64,7 @@ impl<'a> FeatureFrom<&'a [char]> for String {
 
 impl<'a> FeatureFrom<&'a [u8]> for &'a str {
     fn from(token_group: &'a [u8]) -> Self {
-        from_utf8(token_group).unwrap()
+        from_utf8(token_group).expect(UTF_ERR_MSG)
     }
 }
 impl<'a> FeatureFrom<&'a str> for &'a str {
@@ -91,7 +93,7 @@ impl FeatureFrom<String> for String {
 
 impl<'a> FeatureFrom<&'a [u8]> for String {
     fn from(token_group: &'a [u8]) -> Self {
-        from_utf8(token_group).unwrap().to_owned()
+        from_utf8(token_group).expect(UTF_ERR_MSG).to_owned()
     }
 }
 
