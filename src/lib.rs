@@ -234,7 +234,7 @@ pub mod ftzrs {
             $a
         };
         ($a:expr $(, $tail:expr)*) => {{
-            use creature_feature::ftzrs::utils::MultiFtzr;
+            use creature_feature::ftzrs::misc::MultiFtzr;
             MultiFtzr($a, featurizers!($($tail), *),
         )
         }};
