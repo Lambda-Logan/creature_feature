@@ -65,9 +65,12 @@ impl_deref!(Bag<T>);
 impl_deref!(Merged<T>);
 impl_deref!(SelfOut<T>);
 
+const UNICODE_ERR_MSG: &str = 
+    "Featurizing as a &str is only supported for ascii. Please use &[u8] or Vec<char>. (This is at the bottom of the first page of the docs.)";
+
 impl<'a> From<Output<&'a [u8]>> for &'a str {
     fn from(token_group: Output<&'a [u8]>) -> Self {
-        from_utf8(&*token_group).unwrap()
+        from_utf8(&*token_group).expect(UNICODE_ERR_MSG)
     }
 }
 
@@ -85,7 +88,7 @@ impl<T, const N: usize> From<Output<[T; N]>> for [T; N] {
 
 impl<const N: usize> From<Output<[u8; N]>> for String {
     fn from(token_group: Output<[u8; N]>) -> Self {
-        from_utf8(&*token_group).unwrap().to_owned()
+        from_utf8(&*token_group).expect(UNICODE_ERR_MSG).to_owned()
     }
 }
 impl<const N: usize> From<Output<[char; N]>> for String {
