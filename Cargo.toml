@@ -1,6 +1,6 @@
 [package]
 name = "creature_feature"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Logan Dimond"]
 edition = "2018"
 license = "MPL-2.0"
@@ -16,6 +16,8 @@ description = "Composable n-gram combinators that are ergonomic and bare-metal f
 
 [features]
 serde1 = ["serde"]
+heapless = ["dep:heapless"]
+default = []
 
 [package.metadata.playground]
 features = ["serde"]
@@ -26,3 +28,4 @@ features = ["serde"]
 fxhash = {version = "0.2.1"}
 nohash-hasher = "0.2.0"
 serde = { version = "1.0.103", features = ["derive"], optional = true }
+heapless = { version ="0.7.16", optional=true }

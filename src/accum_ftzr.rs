@@ -1,11 +1,15 @@
 use crate::convert::{Bag, Collisions};
 use crate::feature_from::FeatureFrom;
 use crate::multiftzr::MultiFtzr;
+use std::cmp;
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use std::hash::{BuildHasher, Hash};
 use std::ops::AddAssign;
 use std::rc::Rc;
 use std::sync::Arc;
+
+#[cfg(feature = "heapless")]
+use heapless::binary_heap::{self, Kind};
 
 /// The crate's main trait: a highly polymorphic featurizer that's defined by it's ability to visit each group of tokens in the input data.
 ///
@@ -279,6 +283,21 @@ pub trait Accumulates<Token> {
 
     ////////////////////////////////////
     ////////////////////////////////////
+}
+
+#[cfg(feature = "heapless")]
+impl<Token: Ord, K: Kind, const N: usize> Accumulates<Token>
+    for binary_heap::BinaryHeap<Token, K, N>
+{
+    type State = Self;
+
+    fn accum_token(state: &mut Self::State, token: Token) {
+        state.push(token);
+    }
+
+    fn finish(state: Self::State) -> Self {
+        state
+    }
 }
 
 impl<Token, A, B> Accumulates<Token> for (A, B)
