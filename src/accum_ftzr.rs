@@ -1,6 +1,8 @@
 use crate::convert::{Bag, Collisions};
 use crate::feature_from::FeatureFrom;
 use crate::multiftzr::MultiFtzr;
+use crate::HashedAs;
+use fxhash::hash32;
 use std::cmp;
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use std::hash::{BuildHasher, Hash};
@@ -297,6 +299,41 @@ impl<Token: Ord, K: Kind, const N: usize> Accumulates<Token>
 
     fn finish(state: Self::State) -> Self {
         state
+    }
+}
+
+#[derive(Debug)]
+pub struct MinHashState<const N: usize> {
+    seeds: [u32; N],
+    mins: [u32; N],
+}
+
+impl<const N: usize> Default for MinHashState<N> {
+    fn default() -> Self {
+        let mut k = [0; N];
+        for i in 0..N {
+            k[i] = hash32(&i);
+        }
+        MinHashState {
+            seeds: k,
+            mins: [u32::MAX; N],
+        }
+    }
+}
+
+impl<Token: Hash, const N_Hashes: usize> Accumulates<Token> for [HashedAs<u32>; N_Hashes] {
+    type State = MinHashState<N_Hashes>;
+    fn accum_token(state: &mut Self::State, token: Token) {
+        for i in 0..N_Hashes {
+            state.mins[i] = cmp::min(state.mins[i], hash32(&(state.seeds[i], &token)));
+        }
+    }
+    fn finish(state: Self::State) -> Self {
+        let mut k = [HashedAs(0); N_Hashes];
+        for i in 0..N_Hashes {
+            k[i] = HashedAs(state.mins[i])
+        }
+        k
     }
 }
 
