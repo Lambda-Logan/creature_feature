@@ -9,8 +9,12 @@
 
  # See a live demo
 
- [Here](https://ecstatic-leakey-c7a4fc.netlify.app/)  is a live demo of creature_feature using WASM
+ [Here](https://ecstatic-leakey-c7a4fc.netlify.app/)  is a live demo of creature_feature using WASM. Simply change the text or the integer values for 'A' or 'B' to try out the changes live. 
+ 
 
+<a href="https://ecstatic-leakey-c7a4fc.netlify.app/">
+    <img src="https://github.com/Lambda-Logan/creature_feature/assets/68832147/004fc459-e980-43df-bb84-af1a6328164a" width="400" alt="image">
+</a>
 
  # A Swiss Army Knife of Featurization
  ```rust
@@ -168,4 +172,4 @@ impl<'a> Ftzr<&'a Book> for BookFtzr {
 
  # YOU CAN HELP
 
- I'm actually an English teacher, not a dev. So any PRs, observations or feedback is very welcome. I've done my best to document everything well, but if you have any questions feel free to reach out. Your help with any of the small number of [current issues](https://github.com/Lambda-Logan/creature_feature/issues) would be VERY much welcome :)
+Any PRs, observations or feedback is very welcome. I've done my best to document everything well, but if you have any questions feel free to reach out. Your help with any of the small number of [current issues](https://github.com/Lambda-Logan/creature_feature/issues) would be VERY much welcome :)
